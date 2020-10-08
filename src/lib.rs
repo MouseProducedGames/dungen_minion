@@ -9,8 +9,12 @@ pub use generic_dungen_traits::*;
 
 // Internal includes.
 mod dun_gen;
+mod empty_room_dun_gen;
+mod walled_room_dun_gen;
 
 pub use dun_gen::DunGen;
+pub use empty_room_dun_gen::EmptyRoomDunGen;
+pub use walled_room_dun_gen::WalledRoomDunGen;
 
 #[cfg(test)]
 mod tests {
