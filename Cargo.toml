@@ -3,6 +3,11 @@ name = "dungen_minion"
 version = "0.1.0"
 authors = ["MouseProducedGames <largemouse@gmail.com>"]
 edition = "2018"
+license_file = "LICENSE"
+description = "A dungeon generator focused on 2D roguelikes."
+homepage = "https://github.com/MouseProducedGames/dungen_minion"
+repository = "https://github.com/MouseProducedGames/dungen_minion"
+readme = "readme.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
