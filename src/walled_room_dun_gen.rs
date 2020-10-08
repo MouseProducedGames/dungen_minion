@@ -4,7 +4,7 @@
 
 // Internal includes.
 use super::{DoesDunGen, DoesDunGenStatic, Room, SupportsDunGen, TileType};
-use crate::geometry::{LocalPosition, Size};
+use crate::geometry::*;
 
 pub struct WalledRoomDunGen<'a> {
     size: Size,

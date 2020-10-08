@@ -4,7 +4,7 @@
 
 // Internal includes.
 use super::{DoesDunGen, DoesDunGenStatic, SupportsDunGen, TileType};
-use crate::geometry::{LocalPosition, Size};
+use crate::geometry::*;
 
 pub struct EmptyRoomDunGen {
     size: Size,
