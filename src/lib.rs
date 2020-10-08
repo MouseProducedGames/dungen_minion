@@ -1,5 +1,5 @@
 // External includes.
-pub use generic_dungen_rooms::*;
+pub use dungen_minion_rooms::*;
 
 // Standard includes.
 
