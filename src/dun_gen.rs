@@ -3,8 +3,7 @@
 // Standard includes.
 
 // Internal includes.
-use super::Room;
-use crate::traits::{DoesDunGen, DoesDunGenStatic, SupportsDunGen};
+use crate::traits::{DoesDunGen, DoesDunGenStatic, Room, SupportsDunGen};
 
 pub struct DunGen<'a, TRoom>
 where
@@ -18,22 +17,33 @@ impl<'a, TRoom> DunGen<'a, TRoom>
 where
     TRoom: Room<'a> + Clone,
 {
-    pub fn build(&mut self) -> TRoom {
+    pub fn new(map: TRoom) -> Self {
+        Self {
+            map,
+            marker: std::marker::PhantomData::default(),
+        }
+    }
+
+    pub fn build(&self) -> TRoom {
         self.map.clone()
     }
 
-    pub fn gen<TDoesDunGenStatic>(&'a mut self)
+    pub fn gen<TDoesDunGenStatic>(&mut self) -> &mut Self
     where
         TDoesDunGenStatic: DoesDunGenStatic<'a>,
     {
-        TDoesDunGenStatic::dun_gen_static(self)
+        TDoesDunGenStatic::dun_gen_static(self);
+
+        self
     }
 
-    pub fn gen_with<TDoesDunGen>(&'a mut self, with: &'a TDoesDunGen)
+    pub fn gen_with<'b, TDoesDunGen: 'b>(&mut self, with: TDoesDunGen) -> &mut Self
     where
-        TDoesDunGen: DoesDunGen<'a>,
+        TDoesDunGen: DoesDunGen<'b>,
     {
-        with.dun_gen(self)
+        with.dun_gen(self);
+
+        self
     }
 }
 

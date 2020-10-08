@@ -16,7 +16,7 @@ impl EmptyRoomDunGen {
 }
 
 impl<'a> DoesDunGen<'a> for EmptyRoomDunGen {
-    fn dun_gen<'b>(&'a self, target: &mut dyn SupportsDunGen<'b>) {
+    fn dun_gen<'b>(&self, target: &mut dyn SupportsDunGen<'b>) {
         // Convenience.
         let size = self.size;
         if size.width() == 0 || size.height() == 0 {

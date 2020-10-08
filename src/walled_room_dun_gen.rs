@@ -22,7 +22,7 @@ impl<'a> WalledRoomDunGen<'a> {
 }
 
 impl<'a> DoesDunGen<'a> for WalledRoomDunGen<'a> {
-    fn dun_gen<'b>(&'a self, target: &mut dyn SupportsDunGen<'b>) {
+    fn dun_gen<'b>(&self, target: &mut dyn SupportsDunGen<'b>) {
         // Convenience.
         let size = self.size;
         if size.width() == 0 || size.height() == 0 {
@@ -31,14 +31,14 @@ impl<'a> DoesDunGen<'a> for WalledRoomDunGen<'a> {
 
         let map = target.get_map_mut();
         for x in 0..size.width() {
-            map.tile_type_at_local_set(LocalPosition::new(x, 0), TileType::Floor);
+            map.tile_type_at_local_set(LocalPosition::new(x, 0), TileType::Wall);
         }
         for y in 0..size.height() {
-            map.tile_type_at_local_set(LocalPosition::new(0, y), TileType::Floor);
-            map.tile_type_at_local_set(LocalPosition::new(size.width() - 1, y), TileType::Floor);
+            map.tile_type_at_local_set(LocalPosition::new(0, y), TileType::Wall);
+            map.tile_type_at_local_set(LocalPosition::new(size.width() - 1, y), TileType::Wall);
         }
         for x in 0..size.width() {
-            map.tile_type_at_local_set(LocalPosition::new(x, size.height() - 1), TileType::Floor);
+            map.tile_type_at_local_set(LocalPosition::new(x, size.height() - 1), TileType::Wall);
         }
     }
 }
