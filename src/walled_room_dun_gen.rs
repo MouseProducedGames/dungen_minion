@@ -3,9 +3,8 @@
 // Standard includes.
 
 // Internal includes.
-use crate::traits::{
-    DoesDunGen, DoesDunGenStatic, LocalPosition, Room, Size, SupportsDunGen, TileType,
-};
+use super::{DoesDunGen, DoesDunGenStatic, Room, SupportsDunGen, TileType};
+use crate::geometry::{LocalPosition, Size};
 
 pub struct WalledRoomDunGen<'a> {
     size: Size,

@@ -1,9 +1,5 @@
 // External includes.
-pub mod traits {
-    pub use generic_dungen_traits::*;
-}
-
-pub use generic_dungen_structs::*;
+pub use generic_dungen_rooms::*;
 
 // Standard includes.
 

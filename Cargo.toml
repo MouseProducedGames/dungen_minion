@@ -7,5 +7,4 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-generic_dungen_structs = { path = "../generic_dungen_structs" }
-generic_dungen_traits = { path = "../generic_dungen_traits" }
+generic_dungen_rooms = { path = "../generic_dungen_rooms" }

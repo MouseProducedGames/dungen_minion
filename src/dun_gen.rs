@@ -3,7 +3,7 @@
 // Standard includes.
 
 // Internal includes.
-use crate::traits::{DoesDunGen, DoesDunGenStatic, Room, SupportsDunGen};
+use super::{DoesDunGen, DoesDunGenStatic, Room, SupportsDunGen};
 
 pub struct DunGen<'a, TRoom>
 where
