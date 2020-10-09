@@ -10,12 +10,31 @@ use super::{
 };
 use crate::geometry::*;
 
+/// A generator for adding one or more instances of 'Portal' to a room.
+///
+/// The 'EdgePortalsDunGen' **cannot** be called statically, but can be called with an explicit
+/// count to add one or more internal 'Portal' and 'TileType::Portal' instances.
+///
+/// The portals will be generated randomly on the edge of the room, excluding corners..
+///
+/// ```
+/// // Will generate 5 'Portal' and 'TileType::Portal' instances; each matching instance will be on
+/// // the same 'LocalPosition'. Each 'Portal' will have an attached 'Box<dyn PlacedRoom>' which can
+/// // be edited by calling the appropriate methods with various generators, or manually after
+/// // generation.
+/// let map =
+///     dungen_minion::DunGen::new(Box::new(dungen_minion::RoomHashMap::new()))
+///     .gen_with(dungen_minion::EmptyRoomDunGen::new(dungen_minion::geometry::Size::new(8, 6)))
+///     .gen::<dungen_minion::WalledRoomDunGen>()
+///     .build();
+/// ```
 pub struct EdgePortalsDunGen {
     count: usize,
     placed_room_box_func: Box<dyn Fn() -> Box<dyn PlacedRoom>>,
 }
 
 impl EdgePortalsDunGen {
+    /// Creates a new generator for adding portals to a room.
     pub fn new(count: usize, placed_room_box_func: Box<dyn Fn() -> Box<dyn PlacedRoom>>) -> Self {
         Self {
             count,

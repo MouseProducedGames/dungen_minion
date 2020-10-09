@@ -5,12 +5,16 @@
 // Internal includes.
 use super::*;
 
+/// A new dungeon generator for generating dungeons on a room that has a specific position; that
+/// is, a 'PlacedRoom'; in this case, [`map`] #field map.
 pub struct DunGenPlaced {
     map: Box<dyn PlacedRoom>,
     marker: std::marker::PhantomData<dyn PlacedRoom>,
 }
 
 impl DunGenPlaced {
+    /// Creates a new dungeon generator for generating dungeons on a room that has a specific
+    /// position; that is, a 'PlacedRoom'.
     pub fn new(map: Box<dyn PlacedRoom>) -> Self {
         Self {
             map,
@@ -18,10 +22,13 @@ impl DunGenPlaced {
         }
     }
 
+    /// Returns a clone of the generated [`map`] #field map. The 'DunGenPlaced' instance should
+    /// then be discarded.
     pub fn build(&mut self) -> Box<dyn PlacedRoom> {
         self.map.clone()
     }
 
+    /// The 'DunGenPlaced' will apply the provided 'TDoesDunGenStatic' to its primary [`map`]: #field map.
     pub fn gen<TDoesDunGenStatic>(&mut self) -> &mut Self
     where
         TDoesDunGenStatic: DoesDunGenPlacedStatic,
@@ -31,6 +38,9 @@ impl DunGenPlaced {
         self
     }
 
+    /// The 'DunGenPlaced' will apply the static 'TDoesDunGenStatic' to its primary [`map`]: #field map
+    /// or any room on the end of a portal; provided they, themselves, do not contain any instances
+    /// of 'Portal'.
     pub fn gen_leaf_portals_static<TDoesDunGenStatic>(&mut self) -> &mut Self
     where
         TDoesDunGenStatic: DoesDunGenPlacedStatic,
@@ -54,6 +64,9 @@ impl DunGenPlaced {
         }
     }
 
+    /// The 'DunGenPlaced' will apply the provided 'TDoesDunGenPlaced' to its primary [`map`]: #field map
+    /// or any room on the end of a portal; provided they, themselves, do not contain any instances
+    /// of 'Portal'.
     pub fn gen_leaf_portals_with<TDoesDunGenPlaced>(
         &mut self,
         with: &TDoesDunGenPlaced,
@@ -84,6 +97,7 @@ impl DunGenPlaced {
         }
     }
 
+    /// The 'DunGenPlaced' will apply the provided 'TDoesDunGen' to its primary [`map`]: #field map.
     pub fn gen_with<TDoesDunGen>(&mut self, with: TDoesDunGen) -> &mut Self
     where
         TDoesDunGen: DoesDunGenPlaced,
