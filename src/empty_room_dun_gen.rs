@@ -9,16 +9,16 @@ use super::{
 };
 use crate::geometry::*;
 
-/// A generator for creating an area of 'TileType::Floor'.
+/// A generator for creating an area of `TileType::Floor`.
 ///
-/// The 'EmptyRoomDunGen' can be called statically to generate 'TileType::Floor' across the entire
-/// area of the room, or with an explicit size to add internal 'TileType::Floor'.
+/// The `EmptyRoomDunGen` can be called statically to generate `TileType::Floor` across the entire
+/// area of the room, or with an explicit size to add internal `TileType::Floor`.
 ///
 /// The floors will be generated as a rectangle starting from the [0, 0] position.
 ///
 /// ```
 /// // Will generate an empty room 8 tiles wide, and 6 tiles high; its internal area will
-/// // consist of 'TileType::Floor' and be 8 tiles wide, and 6 tiles high, with no remainder.
+/// // consist of `TileType::Floor` and be 8 tiles wide, and 6 tiles high, with no remainder.
 /// let map =
 ///     dungen_minion::DunGen::new(Box::new(dungen_minion::RoomHashMap::new()))
 ///     .gen_with(dungen_minion::EmptyRoomDunGen::new(dungen_minion::geometry::Size::new(8, 6)))

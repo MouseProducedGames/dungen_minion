@@ -11,14 +11,14 @@ use crate::geometry::*;
 
 /// A generator for walling in a room.
 ///
-/// The 'WalledRoomDunGen' can be called statically to generate 'TileType::Wall' around the
-/// perimeter of the room, or with an explicit size to add internal 'TileType::Wall'.
+/// The `WalledRoomDunGen` can be called statically to generate `TileType::Wall` around the
+/// perimeter of the room, or with an explicit size to add internal `TileType::Wall`.
 ///
 /// The walls will be generated as a rectangle starting from the [0, 0] position.
 ///
 /// ```
 /// // Will generate a walled room 8 tiles wide, and 6 tiles high; its internal area will
-/// // consist of 'TileType::Floor' and be 6 tiles wide, and 4 tiles high, with the remainder
+/// // consist of `TileType::Floor` and be 6 tiles wide, and 4 tiles high, with the remainder
 /// // being walls.
 /// let map =
 ///     dungen_minion::DunGen::new(Box::new(dungen_minion::RoomHashMap::new()))

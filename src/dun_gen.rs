@@ -5,14 +5,14 @@
 // Internal includes.
 use super::*;
 
-/// A new dungeon generator for generating dungeons on a 'Room'; in this case, [`map`] #field map.
+/// A new dungeon generator for generating dungeons on a `Room`; in this case, [`map`] #field.map.
 pub struct DunGen {
     map: Box<dyn Room>,
     marker: std::marker::PhantomData<dyn Room>,
 }
 
 impl DunGen {
-    /// Creates a new dungeon generator for generating dungeons on a 'Room'.
+    /// Creates a new dungeon generator for generating dungeons on a `Room`.
     pub fn new(map: Box<dyn Room>) -> Self {
         Self {
             map,
@@ -20,13 +20,13 @@ impl DunGen {
         }
     }
 
-    /// Returns a clone of the generated [`map`] #field map. The 'DunGen' instance should
+    /// Returns a clone of the generated [`map`] #field.map. The `DunGen` instance should
     /// then be discarded.
     pub fn build(&mut self) -> Box<dyn Room> {
         self.map.clone()
     }
 
-    /// The 'DunGen' will apply the provided 'TDoesDunGenStatic' to its primary [`map`]: #field map.
+    /// The `DunGen` will apply the provided `TDoesDunGenStatic` to its primary [`map`]: #field.map.
     pub fn gen<TDoesDunGenStatic>(&mut self) -> &mut Self
     where
         TDoesDunGenStatic: DoesDunGenStatic,
@@ -36,9 +36,9 @@ impl DunGen {
         self
     }
 
-    /// The 'DunGen' will apply the static 'TDoesDunGenStatic' to its primary [`map`]: #field map
+    /// The `DunGen` will apply the static `TDoesDunGenStatic` to its primary [`map`]: #field.map
     /// or any room on the end of a portal; provided they, themselves, do not contain any instances
-    /// of 'Portal'. 'TDoesDunGenStatic' must also implement 'DoesDunGenPlacedStatic'.
+    /// of `Portal`. `TDoesDunGenStatic` must also implement `DoesDunGenPlacedStatic`.
     pub fn gen_leaf_portals_static<TDoesDunGenStatic>(&mut self) -> &mut Self
     where
         TDoesDunGenStatic: DoesDunGenStatic + DoesDunGenPlacedStatic,
@@ -56,9 +56,9 @@ impl DunGen {
         self
     }
 
-    /// The 'DunGenPlaced' will apply the provided 'TDoesDunGen' to its primary [`map`]: #field map
+    /// The `DunGenPlaced` will apply the provided `TDoesDunGen` to its primary [`map`]: #field.map
     /// or any room on the end of a portal; provided they, themselves, do not contain any instances
-    /// of 'Portal'. 'TDoesDunGen' must also implement 'DoesDunGenPlaced'.
+    /// of `Portal`. `TDoesDunGen` must also implement `DoesDunGenPlaced`.
     pub fn gen_leaf_portals_with<TDoesDunGen>(&mut self, with: &TDoesDunGen) -> &mut Self
     where
         TDoesDunGen: DoesDunGen + DoesDunGenPlaced,
@@ -74,7 +74,7 @@ impl DunGen {
         self
     }
 
-    /// The 'DunGenPlaced' will apply the provided 'TDoesDunGen' to its primary [`map`]: #field map.
+    /// The `DunGenPlaced` will apply the provided `TDoesDunGen` to its primary [`map`]: #field.map.
     pub fn gen_with<TDoesDunGen>(&mut self, with: TDoesDunGen) -> &mut Self
     where
         TDoesDunGen: DoesDunGen,

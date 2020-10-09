@@ -3,7 +3,7 @@
 
 //! A dungeon generation library focused on 2D roguelikes.
 //!
-//! 'dungen_minion' is in the very early release stage, with most features being new or unstable.
+//! `dungen_minion` is in the very early release stage, with most features being new or unstable.
 //! It is not (yet!) recommend for general use, although you can test it if you're feeling really
 //! adventurous.
 //!

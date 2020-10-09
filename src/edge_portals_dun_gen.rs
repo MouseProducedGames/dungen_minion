@@ -10,16 +10,16 @@ use super::{
 };
 use crate::geometry::*;
 
-/// A generator for adding one or more instances of 'Portal' to a room.
+/// A generator for adding one or more instances of `Portal` to a room.
 ///
-/// The 'EdgePortalsDunGen' **cannot** be called statically, but can be called with an explicit
-/// count to add one or more internal 'Portal' and 'TileType::Portal' instances.
+/// The `EdgePortalsDunGen` **cannot** be called statically, but can be called with an explicit
+/// count to add one or more internal `Portal` and `TileType::Portal` instances.
 ///
 /// The portals will be generated randomly on the edge of the room, excluding corners..
 ///
 /// ```
-/// // Will generate 5 'Portal' and 'TileType::Portal' instances; each matching instance will be on
-/// // the same 'LocalPosition'. Each 'Portal' will have an attached 'Box<dyn PlacedRoom>' which can
+/// // Will generate 5 `Portal` and `TileType::Portal` instances; each matching instance will be on
+/// // the same `LocalPosition`. Each `Portal` will have an attached `Box<dyn PlacedRoom>` which can
 /// // be edited by calling the appropriate methods with various generators, or manually after
 /// // generation.
 /// let map =
