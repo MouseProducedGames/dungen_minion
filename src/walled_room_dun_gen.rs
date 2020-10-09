@@ -11,19 +11,18 @@ use crate::geometry::*;
 
 /// A generator for walling in a room.
 ///
-/// The `WalledRoomDunGen` can be called statically to generate `TileType::Wall` around the
-/// perimeter of the room, or with an explicit size to add internal `TileType::Wall`.
+/// The `WalledRoomDunGen` can be called statically to generate [`TileType`](enum.TileType.html)::Wall around the perimeter of the room, or with an explicit size to add internal `TileType::Wall`.
 ///
-/// The walls will be generated as a rectangle starting from the [0, 0] position.
+/// The walls will be generated as a rectangle defined by a [`Size`](geometry/struct.Size.html) starting from the [0, 0] [`LocalPosition`](geometry/struct.LocalPosition.html).
 ///
+/// Will generate a walled room 8 tiles wide, and 6 tiles high; its internal area will consist of `TileType::Floor` and be 6 tiles wide, and 4 tiles high, with the remainder being walls.
 /// ```
-/// // Will generate a walled room 8 tiles wide, and 6 tiles high; its internal area will
-/// // consist of `TileType::Floor` and be 6 tiles wide, and 4 tiles high, with the remainder
-/// // being walls.
+/// # use dungen_minion::geometry::*;
+/// # use dungen_minion::*;
 /// let map =
-///     dungen_minion::DunGen::new(Box::new(dungen_minion::RoomHashMap::new()))
-///     .gen_with(dungen_minion::EmptyRoomDunGen::new(dungen_minion::geometry::Size::new(8, 6)))
-///     .gen::<dungen_minion::WalledRoomDunGen>()
+///     DunGen::new(Box::new(RoomHashMap::new()))
+///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
+///     .gen::<WalledRoomDunGen>()
 ///     .build();
 /// ```
 pub struct WalledRoomDunGen {

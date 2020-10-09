@@ -5,16 +5,27 @@
 // Internal includes.
 use super::*;
 
-/// A new dungeon generator for generating dungeons on a room that has a specific position; that
-/// is, a `PlacedRoom`; in this case, [`map`] #field.map.
+/// A new dungeon generator for generating dungeons on a starting [`PlacedRoom`](trait.PlacedRoom.html).
 pub struct DunGenPlaced {
     map: Box<dyn PlacedRoom>,
     marker: std::marker::PhantomData<dyn PlacedRoom>,
 }
 
 impl DunGenPlaced {
-    /// Creates a new dungeon generator for generating dungeons on a room that has a specific
-    /// position; that is, a `PlacedRoom`.
+    /// Creates a new dungeon generator for generating dungeons based on a starting [`PlacedRoom`](trait.PlacedRoom.html).
+    ///
+    ///```
+    /// # use dungen_minion::geometry::*;
+    /// # use dungen_minion::*;
+    /// let map =
+    ///     // The new DunGenPlaced generator is created, and given a primary room.
+    ///     DunGenPlaced::new(Box::new(PlacedRoomWrapper::new(
+    ///         Position::new(0, 0),
+    ///         RoomHashMap::new()
+    ///         )))
+    ///     // Call generation methods, giving them appropriate generators.
+    ///     .build();
+    ///```
     pub fn new(map: Box<dyn PlacedRoom>) -> Self {
         Self {
             map,
@@ -22,13 +33,45 @@ impl DunGenPlaced {
         }
     }
 
-    /// Returns a clone of the generated [`map`] #field map. The `DunGenPlaced` instance should
-    /// then be discarded.
+    /// Returns a clone of the generated [`PlacedRoom`](trait.PlacedRoom.html).
+    ///
+    /// After the dungeon has been generated, the `DunGenPlaced` instance can be safely discarded.
+    ///```
+    /// # use dungen_minion::geometry::*;
+    /// # use dungen_minion::*;
+    /// let map =
+    ///     DunGenPlaced::new(Box::new(PlacedRoomWrapper::new(
+    ///         Position::new(0, 0),
+    ///         RoomHashMap::new()
+    ///         )))
+    ///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
+    ///     .gen::<WalledRoomDunGen>()
+    ///     // At this point, the generator will return a walled room at position (0, 0) that is
+    ///     // 8 tiles wide by 6 tiles high.
+    ///     .build();
+    ///```
     pub fn build(&mut self) -> Box<dyn PlacedRoom> {
         self.map.clone()
     }
 
-    /// The `DunGenPlaced` will apply the provided `TDoesDunGenStatic` to its primary [`map`]: #field.map.
+    /// The `DunGenPlaced` will apply the provided `TDoesDunGenStatic` to its primary map.
+    ///
+    /// The given generator chain will craete a `Room` 8 tiles wide and 6 tiles high, including walls.
+    ///```
+    /// # use dungen_minion::geometry::*;
+    /// # use dungen_minion::*;
+    /// let map =
+    ///     DunGenPlaced::new(Box::new(PlacedRoomWrapper::new(
+    ///         Position::new(0, 0),
+    ///         RoomHashMap::new()
+    ///         )))
+    ///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
+    ///     // WalledRoomDunGen can be called statically, as it can take its `Size` from the `Room`
+    ///     // it is called on.
+    ///     .gen::<WalledRoomDunGen>()
+    ///     // Other generaton.
+    ///     .build();
+    ///```
     pub fn gen<TDoesDunGenStatic>(&mut self) -> &mut Self
     where
         TDoesDunGenStatic: DoesDunGenPlacedStatic,
@@ -38,9 +81,34 @@ impl DunGenPlaced {
         self
     }
 
-    /// The `DunGenPlaced` will apply the static `TDoesDunGenStatic` to its primary [`map`]: #field.map
-    /// or any room on the end of a portal; provided they, themselves, do not contain any instances
-    /// of `Portal`.
+    /// The `DunGenPlaced` will apply the static `TDoesDunGenStatic` to its primary map or any room on the end of a portal; provided they, themselves, do not contain any instances of `Portal`.
+    ///
+    /// The following chain will generate a room 12 tiles wide by 8 tiles high (including walls), and then placed 5 random hallways projecting off of it.
+    ///```
+    /// # use dungen_minion::geometry::*;
+    /// # use dungen_minion::*;
+    /// let map =
+    ///     DunGenPlaced::new(Box::new(PlacedRoomWrapper::new(
+    ///         Position::new(0, 0),
+    ///         RoomHashMap::new()
+    ///         )))
+    ///     .gen_with(EmptyRoomDunGen::new(Size::new(12, 8)))
+    ///     .gen::<WalledRoomDunGen>()
+    ///     .gen_leaf_portals_with(&EdgePortalsDunGen::new(
+    ///         5,
+    ///         Box::new(|| {
+    ///             Box::new(PlacedRoomWrapper::new(
+    ///                 Position::new(0, 0),
+    ///                 RoomHashMap::default(),
+    ///             ))
+    ///         }),
+    ///     ))
+    ///     .gen_leaf_portals_with::<EmptyRoomDunGen>(&EmptyRoomDunGen::new(Size::new(3, 10)))
+    ///     // Information does not need to be provided to the WalledRoomDunGen at this point, as
+    ///     // it can take its Size information from the maps it is called on.
+    ///     .gen_leaf_portals_static::<WalledRoomDunGen>()
+    ///     .build();
+    ///```
     pub fn gen_leaf_portals_static<TDoesDunGenStatic>(&mut self) -> &mut Self
     where
         TDoesDunGenStatic: DoesDunGenPlacedStatic,
@@ -64,9 +132,42 @@ impl DunGenPlaced {
         }
     }
 
-    /// The `DunGenPlaced` will apply the provided `TDoesDunGenPlaced` to its primary [`map`]: #field.map
+    /// The `DunGenPlaced` will apply the provided `TDoesDunGen` to its primary map
     /// or any room on the end of a portal; provided they, themselves, do not contain any instances
     /// of `Portal`.
+    ///
+    /// The following chain will generate a room 12 tiles wide by 8 tiles high (including walls), and then placed 5 random hallways projecting off of it.
+    ///```
+    /// # use dungen_minion::geometry::*;
+    /// # use dungen_minion::*;
+    /// let map =
+    ///     DunGenPlaced::new(Box::new(PlacedRoomWrapper::new(
+    ///         Position::new(0, 0),
+    ///         RoomHashMap::new()
+    ///         )))
+    ///     .gen_with(EmptyRoomDunGen::new(Size::new(12, 8)))
+    ///     .gen::<WalledRoomDunGen>()
+    ///     // EdgePortalsDunGen is called as an instance, as it needs information about how many
+    ///     // portals to generate, and a function that generates new boxed `PlacedRoom` instances
+    ///     // to place at the end of portals.
+    ///     // Since the primary room does not (yet!) have any portals, it will have portals added
+    ///     // to it.
+    ///     .gen_leaf_portals_with(&EdgePortalsDunGen::new(
+    ///         5,
+    ///         Box::new(|| {
+    ///             Box::new(PlacedRoomWrapper::new(
+    ///                 Position::new(0, 0),
+    ///                 RoomHashMap::default(),
+    ///             ))
+    ///         }),
+    ///     ))
+    ///     // Since the added rooms do not yet have portals (nor a size), they will be given a
+    ///     // size of 3 tiles wide by 10 tiles long. We don't need to worry about the rotation of
+    ///     // the generated rooms - that's entirely handled through Portal and EdgePortalsDunGen.
+    ///     .gen_leaf_portals_with::<EmptyRoomDunGen>(&EmptyRoomDunGen::new(Size::new(3, 10)))
+    ///     .gen_leaf_portals_static::<WalledRoomDunGen>()
+    ///     .build();
+    ///```
     pub fn gen_leaf_portals_with<TDoesDunGenPlaced>(
         &mut self,
         with: &TDoesDunGenPlaced,
@@ -97,7 +198,34 @@ impl DunGenPlaced {
         }
     }
 
-    /// The `DunGenPlaced` will apply the provided `TDoesDunGen` to its primary [`map`]: #field.map.
+    /// The `DunGenPlaced` will apply the provided `TDoesDunGen` to its primary map.
+    ///
+    /// The following chain will generate a room 12 tiles wide by 8 tiles high (including walls), and then place 5 random hallways projecting off of it.
+    ///```
+    /// # use dungen_minion::geometry::*;
+    /// # use dungen_minion::*;
+    /// let map =
+    ///     DunGenPlaced::new(Box::new(PlacedRoomWrapper::new(
+    ///         Position::new(0, 0),
+    ///         RoomHashMap::new()
+    ///         )))
+    ///     // EmptyRoomDunGen is called as an instance, as it needs information about how large a
+    ///     // room to generate.
+    ///     .gen_with(EmptyRoomDunGen::new(Size::new(12, 8)))
+    ///     .gen::<WalledRoomDunGen>()
+    ///     .gen_leaf_portals_with(&EdgePortalsDunGen::new(
+    ///         5,
+    ///         Box::new(|| {
+    ///             Box::new(PlacedRoomWrapper::new(
+    ///                 Position::new(0, 0),
+    ///                 RoomHashMap::default(),
+    ///             ))
+    ///         }),
+    ///     ))
+    ///     .gen_leaf_portals_with::<EmptyRoomDunGen>(&EmptyRoomDunGen::new(Size::new(3, 10)))
+    ///     .gen_leaf_portals_static::<WalledRoomDunGen>()
+    ///     .build();
+    ///```
     pub fn gen_with<TDoesDunGen>(&mut self, with: TDoesDunGen) -> &mut Self
     where
         TDoesDunGen: DoesDunGenPlaced,

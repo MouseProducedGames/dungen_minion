@@ -10,22 +10,31 @@ use super::{
 };
 use crate::geometry::*;
 
-/// A generator for adding one or more instances of `Portal` to a room.
+/// A generator for adding one or more instances of [`Portal`](struct.Portal.html) to a room.
 ///
-/// The `EdgePortalsDunGen` **cannot** be called statically, but can be called with an explicit
-/// count to add one or more internal `Portal` and `TileType::Portal` instances.
+/// The `EdgePortalsDunGen` **cannot** be called statically, but can be called with an explicit count to add one or more internal `Portal` and [`TileType`](enum.TileType.html)::Portal instances.
 ///
-/// The portals will be generated randomly on the edge of the room, excluding corners..
+/// The portals will be generated randomly on the edge of the room, excluding corners, and are one-way only.
 ///
+/// Will generate 5 `Portal` and `TileType::Portal` instances; each matching instance will be on the same [`LocalPosition`](geometry/struct.LocalPosition.html). Each `Portal` will have an attached Box<dyn [`PlacedRoom`](trait.PlacedRoom.html)> which can be edited by calling the appropriate methods with various generators, or manually after generation.
 /// ```
-/// // Will generate 5 `Portal` and `TileType::Portal` instances; each matching instance will be on
-/// // the same `LocalPosition`. Each `Portal` will have an attached `Box<dyn PlacedRoom>` which can
-/// // be edited by calling the appropriate methods with various generators, or manually after
-/// // generation.
+/// # use dungen_minion::geometry::*;
+/// # use dungen_minion::*;
 /// let map =
-///     dungen_minion::DunGen::new(Box::new(dungen_minion::RoomHashMap::new()))
-///     .gen_with(dungen_minion::EmptyRoomDunGen::new(dungen_minion::geometry::Size::new(8, 6)))
-///     .gen::<dungen_minion::WalledRoomDunGen>()
+///     DunGen::new(Box::new(RoomHashMap::new()))
+///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
+///     .gen::<WalledRoomDunGen>()
+///     .gen_with(EdgePortalsDunGen::new(
+///         5,
+///         // A boxed generator which provides the boxed `PlacedRoom`s that will be placed at the end of the portal.
+///
+///         Box::new(|| {
+///             Box::new(PlacedRoomWrapper::new(
+///                 Position::new(0, 0),
+///                 RoomHashMap::default(),
+///             ))
+///         })
+///     ))
 ///     .build();
 /// ```
 pub struct EdgePortalsDunGen {
