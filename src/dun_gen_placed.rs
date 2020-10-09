@@ -54,6 +54,36 @@ impl DunGenPlaced {
         }
     }
 
+    pub fn gen_leaf_portals_with<TDoesDunGenPlaced>(
+        &mut self,
+        with: &TDoesDunGenPlaced,
+    ) -> &mut Self
+    where
+        TDoesDunGenPlaced: DoesDunGenPlaced,
+    {
+        Self::gen_leaf_portals_with_impl::<TDoesDunGenPlaced>(&mut self.map, with);
+
+        self
+    }
+
+    pub(crate) fn gen_leaf_portals_with_impl<TDoesDunGenPlaced>(
+        current_map: &mut Box<dyn PlacedRoom>,
+        with: &TDoesDunGenPlaced,
+    ) where
+        TDoesDunGenPlaced: DoesDunGenPlaced,
+    {
+        if current_map.portal_count() == 0 {
+            with.dun_gen_placed_map(current_map);
+        } else {
+            for portal in current_map.portals_mut() {
+                DunGenPlaced::gen_leaf_portals_with_impl::<TDoesDunGenPlaced>(
+                    portal.target_mut(),
+                    with,
+                );
+            }
+        }
+    }
+
     pub fn gen_with<TDoesDunGen>(&mut self, with: TDoesDunGen) -> &mut Self
     where
         TDoesDunGen: DoesDunGenPlaced,

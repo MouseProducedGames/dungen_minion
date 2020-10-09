@@ -48,6 +48,21 @@ impl DunGen {
         self
     }
 
+    pub fn gen_leaf_portals_with<TDoesDunGen>(&mut self, with: &TDoesDunGen) -> &mut Self
+    where
+        TDoesDunGen: DoesDunGen + DoesDunGenPlaced,
+    {
+        if self.map.portal_count() == 0 {
+            with.dun_gen(self);
+        } else {
+            for portal in self.map.portals_mut() {
+                DunGenPlaced::gen_leaf_portals_with_impl::<TDoesDunGen>(portal.target_mut(), with);
+            }
+        }
+
+        self
+    }
+
     pub fn gen_with<TDoesDunGen>(&mut self, with: TDoesDunGen) -> &mut Self
     where
         TDoesDunGen: DoesDunGen,

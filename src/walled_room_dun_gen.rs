@@ -3,7 +3,10 @@
 // Standard includes.
 
 // Internal includes.
-use super::{DoesDunGen, DoesDunGenStatic, Room, SupportsDunGen, TileType};
+use super::{
+    DoesDunGen, DoesDunGenPlaced, DoesDunGenPlacedStatic, DoesDunGenStatic, PlacedRoom, Room,
+    SupportsDunGen, SupportsDunGenPlaced, TileType,
+};
 use crate::geometry::*;
 
 pub struct WalledRoomDunGen {
@@ -29,6 +32,16 @@ impl DoesDunGen for WalledRoomDunGen {
         }
 
         let map = target.get_map_mut();
+        self.dun_gen_map(map);
+    }
+
+    fn dun_gen_map(&self, map: &mut Box<dyn Room>) {
+        // Convenience.
+        let size = self.size;
+        if size.width() == 0 || size.height() == 0 {
+            return;
+        }
+
         for x in 0..size.width() {
             map.tile_type_at_local_set(LocalPosition::new(x, 0), TileType::Wall);
         }
@@ -40,8 +53,21 @@ impl DoesDunGen for WalledRoomDunGen {
             map.tile_type_at_local_set(LocalPosition::new(x, size.height() - 1), TileType::Wall);
         }
     }
+}
 
-    fn dun_gen_map(&self, map: &mut Box<dyn Room>) {
+impl DoesDunGenPlaced for WalledRoomDunGen {
+    fn dun_gen_placed(&self, target: &mut dyn SupportsDunGenPlaced) {
+        // Convenience.
+        let size = self.size;
+        if size.width() == 0 || size.height() == 0 {
+            return;
+        }
+
+        let map = target.get_placed_map_mut();
+        self.dun_gen_placed_map(map);
+    }
+
+    fn dun_gen_placed_map(&self, map: &mut Box<dyn PlacedRoom>) {
         // Convenience.
         let size = self.size;
         if size.width() == 0 || size.height() == 0 {
@@ -70,5 +96,17 @@ impl DoesDunGenStatic for WalledRoomDunGen {
     fn dun_gen_map_static(map: &mut Box<dyn Room>) {
         let size = *(map.size());
         WalledRoomDunGen::new(size).dun_gen_map(map);
+    }
+}
+
+impl DoesDunGenPlacedStatic for WalledRoomDunGen {
+    fn dun_gen_placed_static(target: &mut dyn SupportsDunGenPlaced) {
+        let size = *target.get_placed_map().size();
+        WalledRoomDunGen::new(size).dun_gen_placed(target);
+    }
+
+    fn dun_gen_placed_map_static(map: &mut Box<dyn PlacedRoom>) {
+        let size = *(map.size());
+        WalledRoomDunGen::new(size).dun_gen_placed_map(map);
     }
 }
