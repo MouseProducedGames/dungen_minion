@@ -45,7 +45,8 @@ impl DoesDunGen for EdgePortalsDunGen {
 
         let mut rng = thread_rng();
         for _ in 0..self.count {
-            let on_vertical_wall = rng.gen_bool(size.height() as f64 / size.width() as f64);
+            let total_odds = size.height() as f64 + size.width() as f64;
+            let on_vertical_wall = rng.gen_bool(size.height() as f64 / total_odds);
             if on_vertical_wall {
                 let portal_y = rng.gen_range(1, size.height() - 1);
                 let on_left_wall = rng.gen_bool(0.5);
@@ -104,7 +105,8 @@ impl DoesDunGenPlaced for EdgePortalsDunGen {
 
         let mut rng = thread_rng();
         for _ in 0..self.count {
-            let on_vertical_wall = rng.gen_bool(size.height() as f64 / size.width() as f64);
+            let total_odds = size.height() as f64 + size.width() as f64;
+            let on_vertical_wall = rng.gen_bool(size.height() as f64 / total_odds);
             if on_vertical_wall {
                 let portal_y = rng.gen_range(1, size.height() - 1);
                 let on_left_wall = rng.gen_bool(0.5);
