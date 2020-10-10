@@ -12,7 +12,7 @@ pub struct DunGenPlaced {
 }
 
 impl DunGenPlaced {
-    /// Creates a new dungeon generator for generating dungeons based on a starting [`PlacedRoom`](trait.PlacedRoom.html).
+    /// Creates a new dungeon generator for generating dungeons based on a starting boxed `PlacedRoom`.
     ///
     ///```
     /// # use dungen_minion::geometry::*;
@@ -33,7 +33,7 @@ impl DunGenPlaced {
         }
     }
 
-    /// Returns a clone of the generated [`PlacedRoom`](trait.PlacedRoom.html).
+    /// Returns a boxed clone of the generated `PlacedRoom`.
     ///
     /// After the dungeon has been generated, the `DunGenPlaced` instance can be safely discarded.
     ///```
@@ -49,6 +49,8 @@ impl DunGenPlaced {
     ///     // At this point, the generator will return a walled room at position (0, 0) that is
     ///     // 8 tiles wide by 6 tiles high.
     ///     .build();
+    ///
+    /// assert!(*map.size() == Size::new(8, 6));
     ///```
     pub fn build(&mut self) -> Box<dyn PlacedRoom> {
         self.map.clone()
@@ -56,7 +58,7 @@ impl DunGenPlaced {
 
     /// The `DunGenPlaced` will apply the provided `TDoesDunGenStatic` to its primary map.
     ///
-    /// The given generator chain will craete a `Room` 8 tiles wide and 6 tiles high, including walls.
+    /// The given generator chain will craete a room with a [`Size`](geometry/struct.Size.html) of 8 tiles wide and 6 tiles high, including walls.
     ///```
     /// # use dungen_minion::geometry::*;
     /// # use dungen_minion::*;
@@ -71,6 +73,18 @@ impl DunGenPlaced {
     ///     .gen::<WalledRoomDunGen>()
     ///     // Other generaton.
     ///     .build();
+    ///
+    /// assert!(*map.size() == Size::new(8, 6));
+    /// assert!(map.tile_type_at_local(LocalPosition::new(0, 0)) == Some(&TileType::Wall));
+    /// assert!(map.tile_type_at_local(LocalPosition::new(1, 1)) == Some(&TileType::Floor));
+    /// assert!(map.portal_count() == 0);
+    /// let mut count = 0;
+    /// for portal in map.portals() {
+    ///     // Test will error out if it enters this loop (ie., any portals exist).
+    ///     assert!(false);
+    ///     count += 1;
+    /// }
+    /// assert!(count == 0);
     ///```
     pub fn gen<TDoesDunGenStatic>(&mut self) -> &mut Self
     where
@@ -83,7 +97,7 @@ impl DunGenPlaced {
 
     /// The `DunGenPlaced` will apply the static `TDoesDunGenStatic` to its primary map or any room on the end of a portal; provided they, themselves, do not contain any instances of `Portal`.
     ///
-    /// The following chain will generate a room 12 tiles wide by 8 tiles high (including walls), and then placed 5 random hallways projecting off of it.
+    /// The following chain will generate a room with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then placed 5 random hallways projecting off of it.
     ///```
     /// # use dungen_minion::geometry::*;
     /// # use dungen_minion::*;
@@ -108,6 +122,23 @@ impl DunGenPlaced {
     ///     // it can take its Size information from the maps it is called on.
     ///     .gen_leaf_portals_static::<WalledRoomDunGen>()
     ///     .build();
+    ///
+    /// assert!(*map.size() == Size::new(12, 8));
+    /// assert!(map.portal_count() == 5);
+    /// let mut count = 0;
+    /// for portal in map.portals() {
+    ///     assert!(*portal.target().size() == Size::new(3, 10));
+    ///     assert!(
+    ///         portal.target().tile_type_at_local(
+    ///             LocalPosition::new(0, 0)
+    ///         ) == Some(&TileType::Wall));
+    ///     assert!(
+    ///         portal.target().tile_type_at_local(
+    ///             LocalPosition::new(1, 1)
+    ///         ) == Some(&TileType::Floor));
+    ///     count += 1;
+    /// }
+    /// assert!(count == 5);
     ///```
     pub fn gen_leaf_portals_static<TDoesDunGenStatic>(&mut self) -> &mut Self
     where
@@ -136,7 +167,7 @@ impl DunGenPlaced {
     /// or any room on the end of a portal; provided they, themselves, do not contain any instances
     /// of `Portal`.
     ///
-    /// The following chain will generate a room 12 tiles wide by 8 tiles high (including walls), and then placed 5 random hallways projecting off of it.
+    /// The following chain will generate a room with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then placed 5 random hallways projecting off of it.
     ///```
     /// # use dungen_minion::geometry::*;
     /// # use dungen_minion::*;
@@ -167,6 +198,15 @@ impl DunGenPlaced {
     ///     .gen_leaf_portals_with::<EmptyRoomDunGen>(&EmptyRoomDunGen::new(Size::new(3, 10)))
     ///     .gen_leaf_portals_static::<WalledRoomDunGen>()
     ///     .build();
+    ///
+    /// assert!(*map.size() == Size::new(12, 8));
+    /// assert!(map.portal_count() == 5);
+    /// let mut count = 0;
+    /// for portal in map.portals() {
+    ///     assert!(*portal.target().size() == Size::new(3, 10));
+    ///     count += 1;
+    /// }
+    /// assert!(count == 5);
     ///```
     pub fn gen_leaf_portals_with<TDoesDunGenPlaced>(
         &mut self,
@@ -200,7 +240,7 @@ impl DunGenPlaced {
 
     /// The `DunGenPlaced` will apply the provided `TDoesDunGen` to its primary map.
     ///
-    /// The following chain will generate a room 12 tiles wide by 8 tiles high (including walls), and then place 5 random hallways projecting off of it.
+    /// The following chain will generate a room with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high, with no remainder
     ///```
     /// # use dungen_minion::geometry::*;
     /// # use dungen_minion::*;
@@ -211,20 +251,20 @@ impl DunGenPlaced {
     ///         )))
     ///     // EmptyRoomDunGen is called as an instance, as it needs information about how large a
     ///     // room to generate.
-    ///     .gen_with(EmptyRoomDunGen::new(Size::new(12, 8)))
-    ///     .gen::<WalledRoomDunGen>()
-    ///     .gen_leaf_portals_with(&EdgePortalsDunGen::new(
-    ///         5,
-    ///         Box::new(|| {
-    ///             Box::new(PlacedRoomWrapper::new(
-    ///                 Position::new(0, 0),
-    ///                 RoomHashMap::default(),
-    ///             ))
-    ///         }),
-    ///     ))
-    ///     .gen_leaf_portals_with::<EmptyRoomDunGen>(&EmptyRoomDunGen::new(Size::new(3, 10)))
-    ///     .gen_leaf_portals_static::<WalledRoomDunGen>()
+    ///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
     ///     .build();
+    ///
+    /// assert!(*map.size() == Size::new(8, 6));
+    /// assert!(map.tile_type_at_local(LocalPosition::new(0, 0)) == Some(&TileType::Floor));
+    /// assert!(map.tile_type_at_local(LocalPosition::new(1, 1)) == Some(&TileType::Floor));
+    /// assert!(map.portal_count() == 0);
+    /// let mut count = 0;
+    /// for portal in map.portals() {
+    ///     // Test will error out if it enters this loop (ie., any portals exist).
+    ///     assert!(false);
+    ///     count += 1;
+    /// }
+    /// assert!(count == 0);
     ///```
     pub fn gen_with<TDoesDunGen>(&mut self, with: TDoesDunGen) -> &mut Self
     where

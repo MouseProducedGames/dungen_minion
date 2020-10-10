@@ -24,6 +24,39 @@ use crate::geometry::*;
 ///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
 ///     .gen::<WalledRoomDunGen>()
 ///     .build();
+///
+/// assert!(*map.size() == Size::new(8, 6));
+/// let mut floor_tile_count = 0;
+/// let mut wall_tile_count = 0;
+/// for y in 0..map.size().height() {
+///     for x in 0..map.size().width() {
+///         if (x == 0 || y == 0 ||
+///             x == (map.size().width() - 1) || y == (map.size().height() - 1)) {
+///             assert!(map.tile_type_at_local(LocalPosition::new(x, y)) == Some(&TileType::Wall));
+///             wall_tile_count += 1;
+///         } else {
+///             assert!(map.tile_type_at_local(LocalPosition::new(x, y)) == Some(&TileType::Floor));
+///             floor_tile_count += 1;
+///         }
+///     }    
+/// }
+/// // Area of a rectangle.
+/// assert!(floor_tile_count == (6 * 4));
+/// // Perimeter of a tiled rectangle; the corners are only included on two of the edges, and so
+/// // we subtract the four corner end tiles of the other two edges (this can be worked out on a
+/// // graph).
+/// assert!(wall_tile_count == ((8 * 2) + ((6 * 2) - 4)));
+///
+/// assert!(map.tile_type_at_local(LocalPosition::new(0, 0)) == Some(&TileType::Wall));
+/// assert!(map.tile_type_at_local(LocalPosition::new(1, 1)) == Some(&TileType::Floor));
+/// assert!(map.portal_count() == 0);
+/// let mut count = 0;
+/// for portal in map.portals() {
+///     // Test will error out if it enters this loop (ie., any portals exist).
+///     assert!(false);
+///     count += 1;
+/// }
+/// assert!(count == 0);
 /// ```
 pub struct WalledRoomDunGen {
     size: Size,

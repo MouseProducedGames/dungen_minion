@@ -16,7 +16,7 @@ use crate::geometry::*;
 ///
 /// The portals will be generated randomly on the edge of the room, excluding corners, and are one-way only.
 ///
-/// Will generate 5 `Portal` and `TileType::Portal` instances; each matching instance will be on the same [`LocalPosition`](geometry/struct.LocalPosition.html). Each `Portal` will have an attached Box<dyn [`PlacedRoom`](trait.PlacedRoom.html)> which can be edited by calling the appropriate methods with various generators, or manually after generation.
+/// Will create a room with a `Size` of 8 tiles wide by 6 tiles high, and then generate 5 `Portal` and `TileType::Portal` instances projecting off of it. Each matching `Portal` and `TileType::Portal` instance will be on the same [`LocalPosition`](geometry/struct.LocalPosition.html). Each `Portal` will have an attached Box<dyn [`PlacedRoom`](trait.PlacedRoom.html)> which can be edited by calling the appropriate methods with various generators, or manually after generation.
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
@@ -36,6 +36,23 @@ use crate::geometry::*;
 ///         })
 ///     ))
 ///     .build();
+///
+/// assert!(*map.size() == Size::new(8, 6));
+/// assert!(map.portal_count() == 5);
+/// let mut count = 0;
+/// for portal in map.portals() {
+///     assert!(*portal.target().size() == Size::new(0, 0));
+///     assert!(
+///         portal.target().tile_type_at_local(
+///             LocalPosition::new(0, 0)
+///         ) == None);
+///     assert!(
+///         portal.target().tile_type_at_local(
+///             LocalPosition::new(1, 1)
+///         ) == None);
+///     count += 1;
+/// }
+/// assert!(count == 5);
 /// ```
 pub struct EdgePortalsDunGen {
     count: usize,
