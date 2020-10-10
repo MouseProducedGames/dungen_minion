@@ -12,5 +12,5 @@ readme = "readme.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dungen_minion_rooms = "0.1.4"
+dungen_minion_rooms = "0.1.5"
 rand = "0.7.3"
