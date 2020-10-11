@@ -17,56 +17,77 @@ use crate::geometry::*;
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
-/// let map =
-///     DunGen::new(Box::new(RoomHashMap::new()))
-///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
-///     .gen::<WalledRoomDunGen::<Size>>()
-///     .gen_with(EdgePortalsDunGen::new(
-///         5,
-///         // A boxed generator which provides the boxed `PlacedRoom`s that will be placed at the end of the portal.
+/// for _ in 0..5_000 {
+///     // We could provide CountRange directly to EdgePortalsDunGen, but that would not let us test
+///     // that we have the right number of portals.
+///     // This CountRange will generate a number in the range [2, 5].
+///     let num_portals = CountRange::new(2, 5).provide_count();
+///     let map =
+///         DunGen::new(Box::new(RoomHashMap::new()))
+///         .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
+///         .gen::<WalledRoomDunGen::<Size>>()
+///         .gen_with(EdgePortalsDunGen::new(
+///             num_portals,
+///             // A boxed generator which provides the boxed `PlacedRoom`s that will be placed at
+///             // the end of the portal.
 ///
-///         Box::new(|| {
-///             Box::new(PlacedRoomWrapper::new(
-///                 Position::new(0, 0),
-///                 RoomHashMap::default(),
-///             ))
-///         })
-///     ))
-///     .build();
+///             Box::new(|| {
+///                 Box::new(PlacedRoomWrapper::new(
+///                     Position::new(0, 0),
+///                     RoomHashMap::default(),
+///                 ))
+///             })
+///         ))
+///         .build();
 ///
-/// assert!(*map.size() == Size::new(8, 6));
-/// assert!(map.portal_count() == 5);
-/// let mut count = 0;
-/// for portal in map.portals() {
-///     assert!(*portal.target().size() == Size::new(0, 0));
-///     assert!(
-///         portal.target().tile_type_at_local(
-///             ShapePosition::new(0, 0)
-///         ) == None);
-///     assert!(
-///         portal.target().tile_type_at_local(
-///             ShapePosition::new(1, 1)
-///         ) == None);
-///     count += 1;
+///     assert!(*map.size() == Size::new(8, 6));
+///     assert!(map.portal_count() == num_portals);
+///     assert!(map.portal_count() >= 2 && map.portal_count() <= 5);
+///     let mut portal_count = 0;
+///     for portal in map.portals() {
+///         assert!(*portal.target().size() == Size::new(0, 0));
+///         assert!(
+///             portal.target().tile_type_at_local(
+///                 ShapePosition::new(0, 0)
+///             ) == None);
+///         assert!(
+///             portal.target().tile_type_at_local(
+///                 ShapePosition::new(1, 1)
+///             ) == None);
+///         portal_count += 1;
+///     }
+///     assert!(portal_count == num_portals);
+///     assert!(portal_count >= 2 && portal_count <= 5);
 /// }
-/// assert!(count == 5);
 /// ```
-pub struct EdgePortalsDunGen {
-    count: usize,
+pub struct EdgePortalsDunGen<TProvidesCount>
+where
+    TProvidesCount: ProvidesCount + Sized,
+{
+    provides_count: TProvidesCount,
     placed_room_box_func: Box<dyn Fn() -> Box<dyn PlacedRoom>>,
 }
 
-impl EdgePortalsDunGen {
+impl<TProvidesCount> EdgePortalsDunGen<TProvidesCount>
+where
+    TProvidesCount: ProvidesCount + Sized,
+{
     /// Creates a new generator for adding portals to a room.
-    pub fn new(count: usize, placed_room_box_func: Box<dyn Fn() -> Box<dyn PlacedRoom>>) -> Self {
+    pub fn new(
+        provides_count: TProvidesCount,
+        placed_room_box_func: Box<dyn Fn() -> Box<dyn PlacedRoom>>,
+    ) -> Self {
         Self {
-            count,
+            provides_count,
             placed_room_box_func,
         }
     }
 }
 
-impl DoesDunGen for EdgePortalsDunGen {
+impl<TProvidesCount> DoesDunGen for EdgePortalsDunGen<TProvidesCount>
+where
+    TProvidesCount: ProvidesCount + Sized,
+{
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
         // Convenience.
         let map = target.get_map_mut();
@@ -85,8 +106,9 @@ impl DoesDunGen for EdgePortalsDunGen {
             return;
         }
 
+        let count = self.provides_count.provide_count();
         let mut rng = thread_rng();
-        for _ in 0..self.count {
+        for _ in 0..count {
             let total_odds = size.height() as f64 + size.width() as f64;
             let on_vertical_wall = rng.gen_bool(size.height() as f64 / total_odds);
             if on_vertical_wall {
@@ -126,7 +148,10 @@ impl DoesDunGen for EdgePortalsDunGen {
     }
 }
 
-impl DoesDunGenPlaced for EdgePortalsDunGen {
+impl<TProvidesCount> DoesDunGenPlaced for EdgePortalsDunGen<TProvidesCount>
+where
+    TProvidesCount: ProvidesCount + Sized,
+{
     fn dun_gen_placed(&self, target: &mut dyn SupportsDunGenPlaced) {
         // Convenience.
         let map = target.get_placed_map_mut();
@@ -145,8 +170,9 @@ impl DoesDunGenPlaced for EdgePortalsDunGen {
             return;
         }
 
+        let count = self.provides_count.provide_count();
         let mut rng = thread_rng();
-        for _ in 0..self.count {
+        for _ in 0..count {
             let total_odds = size.height() as f64 + size.width() as f64;
             let on_vertical_wall = rng.gen_bool(size.height() as f64 / total_odds);
             if on_vertical_wall {
