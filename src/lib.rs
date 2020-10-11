@@ -14,8 +14,10 @@
 //! // RoomHashMap is expandable, and has no explicit size restrictions.
 //! let dungen = DunGen::new(Box::new(RoomHashMap::default()))
 //!     // Expand the room to a width of 40, and a height of 30.
+//!     .gen_with(EmptyRoomDunGen::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
 //!     // TileType::Floor will be placed.
-//!     .gen_with(EmptyRoomDunGen::new(Size::new(40, 30)))
+//!     // You may also give it a SizeRange to generate a randomly-sized room.
+//!     // .gen_with(EmptyRoomDunGen::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
 //!     // Create walls for the room.
 //!     .gen::<WalledRoomDunGen>()
 //!     .build();

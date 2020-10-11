@@ -44,32 +44,34 @@ use crate::geometry::*;
 /// }
 /// assert!(count == 0);
 /// ```
-pub struct EmptyRoomDunGen {
-    size: Size,
+pub struct EmptyRoomDunGen<TProvidesSize>
+where
+    TProvidesSize: ProvidesSize + Sized,
+{
+    provides_size: TProvidesSize,
 }
 
-impl EmptyRoomDunGen {
+impl<TProvidesSize> EmptyRoomDunGen<TProvidesSize>
+where
+    TProvidesSize: ProvidesSize + Sized,
+{
     /// Creates a new generator for adding flooring to a room.
-    pub fn new(size: Size) -> Self {
-        Self { size }
+    pub fn new(provides_size: TProvidesSize) -> Self {
+        Self { provides_size }
     }
 }
 
-impl DoesDunGen for EmptyRoomDunGen {
+impl<TProvidesSize> DoesDunGen for EmptyRoomDunGen<TProvidesSize>
+where
+    TProvidesSize: ProvidesSize + Sized,
+{
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
-        // Convenience.
-        let size = self.size;
-        if size.width() == 0 || size.height() == 0 {
-            return;
-        }
-
         let map = target.get_map_mut();
         self.dun_gen_map(map);
     }
 
     fn dun_gen_map(&self, map: &mut Box<dyn Room>) {
-        // Convenience.
-        let size = self.size;
+        let size = self.provides_size.provide_size();
         if size.width() == 0 || size.height() == 0 {
             return;
         }
@@ -85,21 +87,17 @@ impl DoesDunGen for EmptyRoomDunGen {
     }
 }
 
-impl DoesDunGenPlaced for EmptyRoomDunGen {
+impl<TProvidesSize> DoesDunGenPlaced for EmptyRoomDunGen<TProvidesSize>
+where
+    TProvidesSize: ProvidesSize + Sized,
+{
     fn dun_gen_placed(&self, target: &mut dyn SupportsDunGenPlaced) {
-        // Convenience.
-        let size = self.size;
-        if size.width() == 0 || size.height() == 0 {
-            return;
-        }
-
         let map = target.get_placed_map_mut();
         self.dun_gen_placed_map(map);
     }
 
     fn dun_gen_placed_map(&self, map: &mut Box<dyn PlacedRoom>) {
-        // Convenience.
-        let size = self.size;
+        let size = self.provides_size.provide_size();
         if size.width() == 0 || size.height() == 0 {
             return;
         }
@@ -115,7 +113,10 @@ impl DoesDunGenPlaced for EmptyRoomDunGen {
     }
 }
 
-impl DoesDunGenStatic for EmptyRoomDunGen {
+impl<TProvidesSize> DoesDunGenStatic for EmptyRoomDunGen<TProvidesSize>
+where
+    TProvidesSize: ProvidesSize + Sized,
+{
     fn dun_gen_static(target: &mut dyn SupportsDunGen) {
         let size = *(target.get_map().size());
         EmptyRoomDunGen::new(size).dun_gen(target);
@@ -127,7 +128,10 @@ impl DoesDunGenStatic for EmptyRoomDunGen {
     }
 }
 
-impl DoesDunGenPlacedStatic for EmptyRoomDunGen {
+impl<TProvidesSize> DoesDunGenPlacedStatic for EmptyRoomDunGen<TProvidesSize>
+where
+    TProvidesSize: ProvidesSize + Sized,
+{
     fn dun_gen_placed_static(target: &mut dyn SupportsDunGenPlaced) {
         let size = *(target.get_placed_map().size());
         EmptyRoomDunGen::new(size).dun_gen_placed(target);

@@ -117,7 +117,7 @@ impl DunGenPlaced {
     ///             ))
     ///         }),
     ///     ))
-    ///     .gen_leaf_portals_with::<EmptyRoomDunGen>(&EmptyRoomDunGen::new(Size::new(3, 10)))
+    ///     .gen_leaf_portals_with(&EmptyRoomDunGen::new(Size::new(3, 10)))
     ///     // Information does not need to be provided to the WalledRoomDunGen at this point, as
     ///     // it can take its Size information from the maps it is called on.
     ///     .gen_leaf_portals_static::<WalledRoomDunGen>()
@@ -195,7 +195,7 @@ impl DunGenPlaced {
     ///     // Since the added rooms do not yet have portals (nor a size), they will be given a
     ///     // size of 3 tiles wide by 10 tiles long. We don't need to worry about the rotation of
     ///     // the generated rooms - that's entirely handled through Portal and EdgePortalsDunGen.
-    ///     .gen_leaf_portals_with::<EmptyRoomDunGen>(&EmptyRoomDunGen::new(Size::new(3, 10)))
+    ///     .gen_leaf_portals_with(&EmptyRoomDunGen::new(Size::new(3, 10)))
     ///     .gen_leaf_portals_static::<WalledRoomDunGen>()
     ///     .build();
     ///
