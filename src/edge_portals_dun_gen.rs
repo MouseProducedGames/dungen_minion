@@ -23,7 +23,7 @@ use crate::geometry::*;
 /// let map =
 ///     DunGen::new(Box::new(RoomHashMap::new()))
 ///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
-///     .gen::<WalledRoomDunGen>()
+///     .gen::<WalledRoomDunGen::<Size>>()
 ///     .gen_with(EdgePortalsDunGen::new(
 ///         5,
 ///         // A boxed generator which provides the boxed `PlacedRoom`s that will be placed at the end of the portal.

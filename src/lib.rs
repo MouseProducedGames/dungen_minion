@@ -19,7 +19,7 @@
 //!     // You may also give it a SizeRange to generate a randomly-sized room.
 //!     // .gen_with(EmptyRoomDunGen::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
 //!     // Create walls for the room.
-//!     .gen::<WalledRoomDunGen>()
+//!     .gen::<WalledRoomDunGen::<Size>>()
 //!     .build();
 //!
 //! // A simple drawing routine.
