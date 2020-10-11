@@ -64,7 +64,6 @@ where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
     provides_shape_area: TProvidesShapeArea,
-    marker: std::marker::PhantomData<dyn Room>,
 }
 
 impl<TProvidesShapeArea> WalledRoomDunGen<TProvidesShapeArea>
@@ -75,7 +74,6 @@ where
     pub fn new(provides_shape_area: TProvidesShapeArea) -> Self {
         Self {
             provides_shape_area,
-            marker: std::marker::PhantomData::default(),
         }
     }
 }
