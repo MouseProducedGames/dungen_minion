@@ -4,10 +4,7 @@ use rand::{thread_rng, Rng};
 // Standard includes.
 
 // Internal includes.
-use super::{
-    DoesDunGen, DoesDunGenPlaced, DoesDunGenPlacedStatic, DoesDunGenStatic, PlacedRoom, Room,
-    SupportsDunGen, SupportsDunGenPlaced,
-};
+use super::{DoesDunGen, DoesDunGenPlaced, PlacedRoom, Room, SupportsDunGen, SupportsDunGenPlaced};
 use crate::geometry::*;
 
 /// A generator for adding one or more instances of [`Portal`](struct.Portal.html) to a room.
@@ -186,25 +183,5 @@ impl DoesDunGenPlaced for EdgePortalsDunGen {
                 }
             }
         }
-    }
-}
-
-impl DoesDunGenStatic for EdgePortalsDunGen {
-    fn dun_gen_static(_target: &mut dyn SupportsDunGen) {
-        panic!("No idea how many portals to add.");
-    }
-
-    fn dun_gen_map_static(_map: &mut Box<dyn Room>) {
-        panic!("No idea how many portals to add.");
-    }
-}
-
-impl DoesDunGenPlacedStatic for EdgePortalsDunGen {
-    fn dun_gen_placed_static(_target: &mut dyn SupportsDunGenPlaced) {
-        panic!("No idea how many portals to add.");
-    }
-
-    fn dun_gen_placed_map_static(_map: &mut Box<dyn PlacedRoom>) {
-        panic!("No idea how many portals to add.");
     }
 }
