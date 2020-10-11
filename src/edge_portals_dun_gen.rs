@@ -44,11 +44,11 @@ use crate::geometry::*;
 ///     assert!(*portal.target().size() == Size::new(0, 0));
 ///     assert!(
 ///         portal.target().tile_type_at_local(
-///             LocalPosition::new(0, 0)
+///             ShapePosition::new(0, 0)
 ///         ) == None);
 ///     assert!(
 ///         portal.target().tile_type_at_local(
-///             LocalPosition::new(1, 1)
+///             ShapePosition::new(1, 1)
 ///         ) == None);
 ///     count += 1;
 /// }
@@ -93,33 +93,33 @@ impl DoesDunGen for EdgePortalsDunGen {
             let total_odds = size.height() as f64 + size.width() as f64;
             let on_vertical_wall = rng.gen_bool(size.height() as f64 / total_odds);
             if on_vertical_wall {
-                let portal_y = rng.gen_range(1, size.height() - 1);
+                let portal_y = rng.gen_range(1, size.height() - 1) as i32;
                 let on_left_wall = rng.gen_bool(0.5);
                 if on_left_wall {
                     map.add_portal(
-                        LocalPosition::new(0, portal_y),
+                        ShapePosition::new(0, portal_y),
                         OrdinalDirection::East,
                         (self.placed_room_box_func)(),
                     );
                 } else {
                     map.add_portal(
-                        LocalPosition::new(size.width() - 1, portal_y),
+                        ShapePosition::new(size.width() as i32 - 1, portal_y),
                         OrdinalDirection::West,
                         (self.placed_room_box_func)(),
                     );
                 }
             } else {
-                let portal_x = rng.gen_range(1, size.width() - 1);
+                let portal_x = rng.gen_range(1, size.width() - 1) as i32;
                 let on_top_wall = rng.gen_bool(0.5);
                 if on_top_wall {
                     map.add_portal(
-                        LocalPosition::new(portal_x, 0),
+                        ShapePosition::new(portal_x, 0),
                         OrdinalDirection::South,
                         (self.placed_room_box_func)(),
                     );
                 } else {
                     map.add_portal(
-                        LocalPosition::new(portal_x, size.height() - 1),
+                        ShapePosition::new(portal_x, size.height() as i32 - 1),
                         OrdinalDirection::North,
                         (self.placed_room_box_func)(),
                     );
@@ -153,33 +153,33 @@ impl DoesDunGenPlaced for EdgePortalsDunGen {
             let total_odds = size.height() as f64 + size.width() as f64;
             let on_vertical_wall = rng.gen_bool(size.height() as f64 / total_odds);
             if on_vertical_wall {
-                let portal_y = rng.gen_range(1, size.height() - 1);
+                let portal_y = rng.gen_range(1, size.height() - 1) as i32;
                 let on_left_wall = rng.gen_bool(0.5);
                 if on_left_wall {
                     map.add_portal(
-                        LocalPosition::new(0, portal_y),
+                        ShapePosition::new(0, portal_y),
                         OrdinalDirection::East,
                         (self.placed_room_box_func)(),
                     );
                 } else {
                     map.add_portal(
-                        LocalPosition::new(size.width() - 1, portal_y),
+                        ShapePosition::new(size.width() as i32 - 1, portal_y),
                         OrdinalDirection::West,
                         (self.placed_room_box_func)(),
                     );
                 }
             } else {
-                let portal_x = rng.gen_range(1, size.width() - 1);
+                let portal_x = rng.gen_range(1, size.width() - 1) as i32;
                 let on_top_wall = rng.gen_bool(0.5);
                 if on_top_wall {
                     map.add_portal(
-                        LocalPosition::new(portal_x, 0),
+                        ShapePosition::new(portal_x, 0),
                         OrdinalDirection::South,
                         (self.placed_room_box_func)(),
                     );
                 } else {
                     map.add_portal(
-                        LocalPosition::new(portal_x, size.height() - 1),
+                        ShapePosition::new(portal_x, size.height() as i32 - 1),
                         OrdinalDirection::North,
                         (self.placed_room_box_func)(),
                     );

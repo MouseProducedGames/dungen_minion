@@ -28,7 +28,8 @@ use crate::geometry::*;
 /// let mut tile_count = 0;
 /// for y in 0..map.size().height() {
 ///     for x in 0..map.size().width() {
-///         assert!(map.tile_type_at_local(LocalPosition::new(x, y)) == Some(&TileType::Floor));
+///         let shape_position = ShapePosition::new(x as i32, y as i32);
+///         assert!(map.tile_type_at_local(shape_position) == Some(&TileType::Floor));
 ///         tile_count += 1;
 ///     }    
 /// }
@@ -75,7 +76,10 @@ impl DoesDunGen for EmptyRoomDunGen {
 
         for y in 0..size.height() {
             for x in 0..size.width() {
-                map.tile_type_at_local_set(LocalPosition::new(x, y), TileType::Floor);
+                map.tile_type_at_local_set(
+                    ShapePosition::new(x as Coord, y as Coord),
+                    TileType::Floor,
+                );
             }
         }
     }
@@ -102,7 +106,10 @@ impl DoesDunGenPlaced for EmptyRoomDunGen {
 
         for y in 0..size.height() {
             for x in 0..size.width() {
-                map.tile_type_at_local_set(LocalPosition::new(x, y), TileType::Floor);
+                map.tile_type_at_local_set(
+                    ShapePosition::new(x as Coord, y as Coord),
+                    TileType::Floor,
+                );
             }
         }
     }

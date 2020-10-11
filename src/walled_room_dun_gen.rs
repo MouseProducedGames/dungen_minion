@@ -30,12 +30,13 @@ use crate::geometry::*;
 /// let mut wall_tile_count = 0;
 /// for y in 0..map.size().height() {
 ///     for x in 0..map.size().width() {
+///         let shape_position = ShapePosition::new(x as i32, y as i32);
 ///         if (x == 0 || y == 0 ||
 ///             x == (map.size().width() - 1) || y == (map.size().height() - 1)) {
-///             assert!(map.tile_type_at_local(LocalPosition::new(x, y)) == Some(&TileType::Wall));
+///             assert!(map.tile_type_at_local(shape_position) == Some(&TileType::Wall));
 ///             wall_tile_count += 1;
 ///         } else {
-///             assert!(map.tile_type_at_local(LocalPosition::new(x, y)) == Some(&TileType::Floor));
+///             assert!(map.tile_type_at_local(shape_position) == Some(&TileType::Floor));
 ///             floor_tile_count += 1;
 ///         }
 ///     }    
@@ -47,8 +48,8 @@ use crate::geometry::*;
 /// // graph).
 /// assert!(wall_tile_count == ((8 * 2) + ((6 * 2) - 4)));
 ///
-/// assert!(map.tile_type_at_local(LocalPosition::new(0, 0)) == Some(&TileType::Wall));
-/// assert!(map.tile_type_at_local(LocalPosition::new(1, 1)) == Some(&TileType::Floor));
+/// assert!(map.tile_type_at_local(ShapePosition::new(0, 0)) == Some(&TileType::Wall));
+/// assert!(map.tile_type_at_local(ShapePosition::new(1, 1)) == Some(&TileType::Floor));
 /// assert!(map.portal_count() == 0);
 /// let mut count = 0;
 /// for portal in map.portals() {
@@ -93,14 +94,20 @@ impl DoesDunGen for WalledRoomDunGen {
         }
 
         for x in 0..size.width() {
-            map.tile_type_at_local_set(LocalPosition::new(x, 0), TileType::Wall);
+            map.tile_type_at_local_set(ShapePosition::new(x as Coord, 0), TileType::Wall);
         }
         for y in 0..size.height() {
-            map.tile_type_at_local_set(LocalPosition::new(0, y), TileType::Wall);
-            map.tile_type_at_local_set(LocalPosition::new(size.width() - 1, y), TileType::Wall);
+            map.tile_type_at_local_set(ShapePosition::new(0, y as Coord), TileType::Wall);
+            map.tile_type_at_local_set(
+                ShapePosition::new(size.width() as Coord - 1, y as Coord),
+                TileType::Wall,
+            );
         }
         for x in 0..size.width() {
-            map.tile_type_at_local_set(LocalPosition::new(x, size.height() - 1), TileType::Wall);
+            map.tile_type_at_local_set(
+                ShapePosition::new(x as Coord, size.height() as Coord - 1),
+                TileType::Wall,
+            );
         }
     }
 }
@@ -125,14 +132,20 @@ impl DoesDunGenPlaced for WalledRoomDunGen {
         }
 
         for x in 0..size.width() {
-            map.tile_type_at_local_set(LocalPosition::new(x, 0), TileType::Wall);
+            map.tile_type_at_local_set(ShapePosition::new(x as Coord, 0), TileType::Wall);
         }
         for y in 0..size.height() {
-            map.tile_type_at_local_set(LocalPosition::new(0, y), TileType::Wall);
-            map.tile_type_at_local_set(LocalPosition::new(size.width() - 1, y), TileType::Wall);
+            map.tile_type_at_local_set(ShapePosition::new(0, y as Coord), TileType::Wall);
+            map.tile_type_at_local_set(
+                ShapePosition::new(size.width() as Coord - 1, y as Coord),
+                TileType::Wall,
+            );
         }
         for x in 0..size.width() {
-            map.tile_type_at_local_set(LocalPosition::new(x, size.height() - 1), TileType::Wall);
+            map.tile_type_at_local_set(
+                ShapePosition::new(x as Coord, size.height() as Coord - 1),
+                TileType::Wall,
+            );
         }
     }
 }

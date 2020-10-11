@@ -23,7 +23,7 @@
 //! // A simple drawing routine.
 //! for y in 0..dungen.size().height() {
 //!     for x in 0..dungen.size().width() {
-//!         let tile_type = dungen.tile_type_at_local(LocalPosition::new(x, y));
+//!         let tile_type = dungen.tile_type_at_local(ShapePosition::new(x as i32, y as i32));
 //!         if tile_type.is_none() {
 //!             continue;
 //!         }

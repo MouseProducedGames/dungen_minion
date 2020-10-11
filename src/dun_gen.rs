@@ -65,8 +65,8 @@ impl DunGen {
     ///     .build();
     ///
     /// assert!(*map.size() == Size::new(8, 6));
-    /// assert!(map.tile_type_at_local(LocalPosition::new(0, 0)) == Some(&TileType::Wall));
-    /// assert!(map.tile_type_at_local(LocalPosition::new(1, 1)) == Some(&TileType::Floor));
+    /// assert!(map.tile_type_at_local(ShapePosition::new(0, 0)) == Some(&TileType::Wall));
+    /// assert!(map.tile_type_at_local(ShapePosition::new(1, 1)) == Some(&TileType::Floor));
     /// assert!(map.portal_count() == 0);
     /// let mut count = 0;
     /// for portal in map.portals() {
@@ -117,11 +117,11 @@ impl DunGen {
     ///     assert!(*portal.target().size() == Size::new(3, 10));
     ///     assert!(
     ///         portal.target().tile_type_at_local(
-    ///             LocalPosition::new(0, 0)
+    ///             ShapePosition::new(0, 0)
     ///         ) == Some(&TileType::Wall));
     ///     assert!(
     ///         portal.target().tile_type_at_local(
-    ///             LocalPosition::new(1, 1)
+    ///             ShapePosition::new(1, 1)
     ///         ) == Some(&TileType::Floor));
     ///     count += 1;
     /// }
@@ -215,8 +215,8 @@ impl DunGen {
     ///     .build();
     ///
     /// assert!(*map.size() == Size::new(8, 6));
-    /// assert!(map.tile_type_at_local(LocalPosition::new(0, 0)) == Some(&TileType::Floor));
-    /// assert!(map.tile_type_at_local(LocalPosition::new(1, 1)) == Some(&TileType::Floor));
+    /// assert!(map.tile_type_at_local(ShapePosition::new(0, 0)) == Some(&TileType::Floor));
+    /// assert!(map.tile_type_at_local(ShapePosition::new(1, 1)) == Some(&TileType::Floor));
     /// assert!(map.portal_count() == 0);
     /// let mut count = 0;
     /// for portal in map.portals() {
