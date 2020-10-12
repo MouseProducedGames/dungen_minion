@@ -33,7 +33,6 @@ use crate::geometry::*;
 /// for y in 0..map.size().height() {
 ///     for x in 0..map.size().width() {
 ///         let shape_position = ShapePosition::new(x as i32, y as i32);
-///         println!("{}", shape_position);
 ///         if (x <= 2 || y <= 1 ||
 ///             x >= (map.size().width() - 3) || y >= (map.size().height() - 2)) {
 ///             assert!(map.tile_type_at_local(shape_position) == Some(&TileType::Floor));
