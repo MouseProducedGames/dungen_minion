@@ -4,8 +4,8 @@
 
 // Internal includes.
 use super::{
-    DoesDunGen, DoesDunGenPlaced, DoesDunGenPlacedStatic, DoesDunGenStatic, PlacedRoom, Room,
-    SupportsDunGen, SupportsDunGenPlaced, TileType,
+    DoesDunGen, DoesDunGenPlaced, DoesDunGenPlacedStatic, DoesDunGenStatic, FillTilesDunGen,
+    PlacedRoom, Room, SupportsDunGen, SupportsDunGenPlaced, TileType,
 };
 use crate::geometry::*;
 
@@ -48,7 +48,7 @@ pub struct EmptyRoomDunGen<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
-    provides_shape_area: TProvidesShapeArea,
+    forward_to: FillTilesDunGen<TProvidesShapeArea>,
 }
 
 impl<TProvidesShapeArea> EmptyRoomDunGen<TProvidesShapeArea>
@@ -58,7 +58,7 @@ where
     /// Creates a new generator for adding flooring to a room.
     pub fn new(provides_shape_area: TProvidesShapeArea) -> Self {
         Self {
-            provides_shape_area,
+            forward_to: FillTilesDunGen::new(provides_shape_area, TileType::Floor),
         }
     }
 }
@@ -68,21 +68,11 @@ where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
-        let map = target.get_map_mut();
-        self.dun_gen_map(map);
+        self.forward_to.dun_gen(target)
     }
 
     fn dun_gen_map(&self, map: &mut Box<dyn Room>) {
-        let shape_area = self.provides_shape_area.provide_shape_area();
-        if shape_area.width() == 0 || shape_area.height() == 0 {
-            return;
-        }
-
-        for y in shape_area.shape_position().y()..=shape_area.bottom() {
-            for x in shape_area.shape_position().x()..=shape_area.right() {
-                map.tile_type_at_local_set(ShapePosition::new(x, y), TileType::Floor);
-            }
-        }
+        self.forward_to.dun_gen_map(map)
     }
 }
 
@@ -91,21 +81,11 @@ where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
     fn dun_gen_placed(&self, target: &mut dyn SupportsDunGenPlaced) {
-        let map = target.get_placed_map_mut();
-        self.dun_gen_placed_map(map);
+        self.forward_to.dun_gen_placed(target)
     }
 
     fn dun_gen_placed_map(&self, map: &mut Box<dyn PlacedRoom>) {
-        let shape_area = self.provides_shape_area.provide_shape_area();
-        if shape_area.width() == 0 || shape_area.height() == 0 {
-            return;
-        }
-
-        for y in shape_area.shape_position().y()..=shape_area.bottom() {
-            for x in shape_area.shape_position().x()..=shape_area.right() {
-                map.tile_type_at_local_set(ShapePosition::new(x, y), TileType::Floor);
-            }
-        }
+        self.forward_to.dun_gen_placed_map(map)
     }
 }
 
