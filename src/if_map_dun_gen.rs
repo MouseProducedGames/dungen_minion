@@ -5,9 +5,9 @@
 // Internal includes.
 use super::*;
 
-/// Used to sequentially execute a series of dungeon generators..
+/// Used to conditionally execute a dungeon generator.
 ///
-/// The following chain will generate a room with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then add 5 randomly-placed hallways projecting off of it.
+/// The following chain will generate a room with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then add 1 randomly-placed room and 4 randomly-placed hallways projecting off of it.
 ///```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
@@ -90,7 +90,7 @@ where
     TMapFunc: Fn(&Box<dyn Room>) -> bool,
     TPlacedMapFunc: Fn(&Box<dyn PlacedRoom>) -> bool,
 {
-    /// Creates a new sequential set of dungeon generators.
+    /// Creates a new conditional dungeon generator.
     pub fn new(map_func: TMapFunc, placed_map_func: TPlacedMapFunc, dun_gen: TDunGen) -> Self {
         Self {
             map_func,
