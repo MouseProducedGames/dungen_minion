@@ -59,6 +59,7 @@ mod fill_tiles_dun_gen;
 mod if_map_dun_gen;
 mod sequential_dun_gen;
 mod traverse_portals_dun_gen;
+mod traverse_this_and_portals_dun_gen;
 mod walled_room_dun_gen;
 
 pub use dun_gen::DunGen;
@@ -69,6 +70,7 @@ pub use fill_tiles_dun_gen::FillTilesDunGen;
 pub use if_map_dun_gen::IfMapDunGen;
 pub use sequential_dun_gen::SequentialDunGen;
 pub use traverse_portals_dun_gen::TraversePortalsDunGen;
+pub use traverse_this_and_portals_dun_gen::TraverseThisAndPortalsDunGen;
 pub use walled_room_dun_gen::WalledRoomDunGen;
 
 #[cfg(test)]
