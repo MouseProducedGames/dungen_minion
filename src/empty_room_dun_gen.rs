@@ -78,8 +78,8 @@ where
             return;
         }
 
-        for y in shape_area.shape_position().x()..=shape_area.bottom() {
-            for x in shape_area.shape_position().y()..=shape_area.right() {
+        for y in shape_area.shape_position().y()..=shape_area.bottom() {
+            for x in shape_area.shape_position().x()..=shape_area.right() {
                 map.tile_type_at_local_set(ShapePosition::new(x, y), TileType::Floor);
             }
         }
@@ -101,8 +101,8 @@ where
             return;
         }
 
-        for y in shape_area.shape_position().x()..=shape_area.bottom() {
-            for x in shape_area.shape_position().y()..=shape_area.right() {
+        for y in shape_area.shape_position().y()..=shape_area.bottom() {
+            for x in shape_area.shape_position().x()..=shape_area.right() {
                 map.tile_type_at_local_set(ShapePosition::new(x, y), TileType::Floor);
             }
         }
