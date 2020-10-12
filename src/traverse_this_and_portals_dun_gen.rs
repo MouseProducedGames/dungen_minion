@@ -57,7 +57,7 @@ impl<TDunGen> TraverseThisAndPortalsDunGen<TDunGen>
 where
     TDunGen: DoesAllInstancedDunGen,
 {
-    /// Creates a new traversing dungeon generator.
+    /// Creates a dungeon generator that traverses the current map and portals.
     pub fn new(dun_gen: TDunGen) -> Self {
         Self { dun_gen }
     }
