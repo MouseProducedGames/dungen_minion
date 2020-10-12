@@ -30,6 +30,10 @@ use super::*;
 ///     .build();
 ///
 /// assert!(*map.size() == Size::new(12, 8));
+///
+/// assert!(map.tile_type_at_local(ShapePosition::new(0, 0)) == Some(&TileType::Wall));
+/// assert!(map.tile_type_at_local(ShapePosition::new(1, 1)) == Some(&TileType::Floor));
+///
 /// assert!(map.portal_count() == 5);
 /// let mut count = 0;
 /// for portal in map.portals() {
@@ -69,17 +73,17 @@ where
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
         let map = target.get_map_mut();
+        self.dun_gen.dun_gen_map(map);
         for portal_mut in map.portals_mut() {
             let map = portal_mut.target_mut();
-            self.dun_gen.dun_gen_placed_map(map);
             self.dun_gen.dun_gen_placed_map(map);
         }
     }
 
     fn dun_gen_map(&self, map: &mut Box<dyn Room>) {
+        self.dun_gen.dun_gen_map(map);
         for portal_mut in map.portals_mut() {
             let map = portal_mut.target_mut();
-            self.dun_gen.dun_gen_placed_map(map);
             self.dun_gen.dun_gen_placed_map(map);
         }
     }
@@ -91,17 +95,17 @@ where
 {
     fn dun_gen_placed(&self, target: &mut dyn SupportsDunGenPlaced) {
         let map = target.get_placed_map_mut();
+        self.dun_gen.dun_gen_placed_map(map);
         for portal_mut in map.portals_mut() {
             let map = portal_mut.target_mut();
-            self.dun_gen.dun_gen_placed_map(map);
             self.dun_gen.dun_gen_placed_map(map);
         }
     }
 
     fn dun_gen_placed_map(&self, map: &mut Box<dyn PlacedRoom>) {
+        self.dun_gen.dun_gen_placed_map(map);
         for portal_mut in map.portals_mut() {
             let map = portal_mut.target_mut();
-            self.dun_gen.dun_gen_placed_map(map);
             self.dun_gen.dun_gen_placed_map(map);
         }
     }
