@@ -5,7 +5,7 @@
 // Internal includes.
 use super::*;
 
-/// Used to sequentially execute a series of dungeon generators..
+/// Used to execute a dungeon generator by traversing portals.
 ///
 /// The following chain will generate a room with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then add 5 randomly-placed hallways projecting off of it.
 ///```
