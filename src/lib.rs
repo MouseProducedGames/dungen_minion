@@ -14,12 +14,12 @@
 //! // RoomHashMap is expandable, and has no explicit size restrictions.
 //! let dungen = DunGen::new(Box::new(RoomHashMap::default()))
 //!     // Expand the room to a width of 40, and a height of 30.
-//!     .gen_with(EmptyRoomDunGen::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
+//!     .gen_with(EmptyRoomGenerator::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
 //!     // TileType::Floor will be placed.
 //!     // You may also give it a SizeRange to generate a randomly-sized room.
-//!     // .gen_with(EmptyRoomDunGen::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
+//!     // .gen_with(EmptyRoomGenerator::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
 //!     // Create walls for the room.
-//!     .gen::<WalledRoomDunGen::<Size>>()
+//!     .gen::<WalledRoomGenerator::<Size>>()
 //!     .build();
 //!
 //! // A simple drawing routine.
@@ -53,25 +53,25 @@ pub use dungen_minion_rooms::*;
 // Internal includes.
 mod dun_gen;
 mod dun_gen_placed;
-mod edge_portals_dun_gen;
-mod empty_room_dun_gen;
-mod fill_tiles_dun_gen;
-mod if_map_dun_gen;
-mod sequential_dun_gen;
-mod traverse_portals_dun_gen;
-mod traverse_this_and_portals_dun_gen;
-mod walled_room_dun_gen;
+mod edge_portals_generator;
+mod empty_room_generator;
+mod fill_tiles_generator;
+mod if_map_then_generator;
+mod sequential_generator;
+mod traverse_portals_generator;
+mod traverse_this_and_portals_generator;
+mod walled_room_generator;
 
 pub use dun_gen::DunGen;
 pub use dun_gen_placed::DunGenPlaced;
-pub use edge_portals_dun_gen::EdgePortalsDunGen;
-pub use empty_room_dun_gen::EmptyRoomDunGen;
-pub use fill_tiles_dun_gen::FillTilesDunGen;
-pub use if_map_dun_gen::IfMapDunGen;
-pub use sequential_dun_gen::SequentialDunGen;
-pub use traverse_portals_dun_gen::TraversePortalsDunGen;
-pub use traverse_this_and_portals_dun_gen::TraverseThisAndPortalsDunGen;
-pub use walled_room_dun_gen::WalledRoomDunGen;
+pub use edge_portals_generator::EdgePortalsGenerator;
+pub use empty_room_generator::EmptyRoomGenerator;
+pub use fill_tiles_generator::FillTilesGenerator;
+pub use if_map_then_generator::IfMapThenGenerator;
+pub use sequential_generator::SequentialGenerator;
+pub use traverse_portals_generator::TraversePortalsGenerator;
+pub use traverse_this_and_portals_generator::TraverseThisAndPortalsGenerator;
+pub use walled_room_generator::WalledRoomGenerator;
 
 #[cfg(test)]
 mod tests {

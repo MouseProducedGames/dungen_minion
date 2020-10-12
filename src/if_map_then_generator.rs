@@ -13,10 +13,10 @@ use super::*;
 /// # use dungen_minion::*;
 /// let map =
 ///     DunGen::new(Box::new(RoomHashMap::new()))
-///     .gen_with(SequentialDunGen::new(&[
-///         &EmptyRoomDunGen::new(Size::new(12, 8)),
-///         &WalledRoomDunGen::new(Size::zero()),
-///         &EdgePortalsDunGen::new(
+///     .gen_with(SequentialGenerator::new(&[
+///         &EmptyRoomGenerator::new(Size::new(12, 8)),
+///         &WalledRoomGenerator::new(Size::zero()),
+///         &EdgePortalsGenerator::new(
 ///             1,
 ///             Box::new(|| {
 ///                 Box::new(PlacedRoomWrapper::new(
@@ -26,12 +26,12 @@ use super::*;
 ///             }),
 ///         )
 ///     ]))
-///     .gen_with(TraversePortalsDunGen::new(SequentialDunGen::new(&[
-///         &EmptyRoomDunGen::new(Size::new(8, 6)),
-///         &WalledRoomDunGen::new(Size::zero()),
+///     .gen_with(TraversePortalsGenerator::new(SequentialGenerator::new(&[
+///         &EmptyRoomGenerator::new(Size::new(8, 6)),
+///         &WalledRoomGenerator::new(Size::zero()),
 ///     ])))
 ///     .gen_with(
-///         EdgePortalsDunGen::new(
+///         EdgePortalsGenerator::new(
 ///             4,
 ///             Box::new(|| {
 ///                 Box::new(PlacedRoomWrapper::new(
@@ -41,12 +41,12 @@ use super::*;
 ///             }),
 ///     ))
 ///     // The if-check ensures that we only generate on maps that haven't already been generated.
-///     .gen_with(TraversePortalsDunGen::new(IfMapDunGen::new(
+///     .gen_with(TraversePortalsGenerator::new(IfMapThenGenerator::new(
 ///         |map| *map.size() == Size::zero(),
 ///         |placed_map| *placed_map.size() == Size::zero(),
-///         SequentialDunGen::new(&[
-///             &EmptyRoomDunGen::new(Size::new(3, 10)),
-///             &WalledRoomDunGen::new(Size::zero()),
+///         SequentialGenerator::new(&[
+///             &EmptyRoomGenerator::new(Size::new(3, 10)),
+///             &WalledRoomGenerator::new(Size::zero()),
 ///         ])
 ///     )))
 ///     .build();
@@ -73,7 +73,7 @@ use super::*;
 /// }
 /// assert!(count == 5);
 ///```
-pub struct IfMapDunGen<TDunGen, TMapFunc, TPlacedMapFunc>
+pub struct IfMapThenGenerator<TDunGen, TMapFunc, TPlacedMapFunc>
 where
     TDunGen: DoesAllInstancedDunGen,
     TMapFunc: Fn(&Box<dyn Room>) -> bool,
@@ -84,7 +84,7 @@ where
     dun_gen: TDunGen,
 }
 
-impl<TDunGen, TMapFunc, TPlacedMapFunc> IfMapDunGen<TDunGen, TMapFunc, TPlacedMapFunc>
+impl<TDunGen, TMapFunc, TPlacedMapFunc> IfMapThenGenerator<TDunGen, TMapFunc, TPlacedMapFunc>
 where
     TDunGen: DoesAllInstancedDunGen,
     TMapFunc: Fn(&Box<dyn Room>) -> bool,
@@ -101,7 +101,7 @@ where
 }
 
 impl<TDunGen, TMapFunc, TPlacedMapFunc> DoesDunGen
-    for IfMapDunGen<TDunGen, TMapFunc, TPlacedMapFunc>
+    for IfMapThenGenerator<TDunGen, TMapFunc, TPlacedMapFunc>
 where
     TDunGen: DoesAllInstancedDunGen,
     TMapFunc: Fn(&Box<dyn Room>) -> bool,
@@ -122,7 +122,7 @@ where
 }
 
 impl<TDunGen, TMapFunc, TPlacedMapFunc> DoesDunGenPlaced
-    for IfMapDunGen<TDunGen, TMapFunc, TPlacedMapFunc>
+    for IfMapThenGenerator<TDunGen, TMapFunc, TPlacedMapFunc>
 where
     TDunGen: DoesAllInstancedDunGen,
     TMapFunc: Fn(&Box<dyn Room>) -> bool,
@@ -143,7 +143,7 @@ where
 }
 
 impl<TDunGen, TMapFunc, TPlacedMapFunc> DoesAllInstancedDunGen
-    for IfMapDunGen<TDunGen, TMapFunc, TPlacedMapFunc>
+    for IfMapThenGenerator<TDunGen, TMapFunc, TPlacedMapFunc>
 where
     TDunGen: DoesAllInstancedDunGen,
     TMapFunc: Fn(&Box<dyn Room>) -> bool,

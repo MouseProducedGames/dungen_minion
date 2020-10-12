@@ -13,10 +13,10 @@ use super::*;
 /// # use dungen_minion::*;
 /// let map =
 ///     DunGen::new(Box::new(RoomHashMap::new()))
-///     .gen_with(SequentialDunGen::new(&[
-///         &EmptyRoomDunGen::new(Size::new(12, 8)),
-///         &WalledRoomDunGen::new(Size::zero()),
-///         &EdgePortalsDunGen::new(
+///     .gen_with(SequentialGenerator::new(&[
+///         &EmptyRoomGenerator::new(Size::new(12, 8)),
+///         &WalledRoomGenerator::new(Size::zero()),
+///         &EdgePortalsGenerator::new(
 ///             5,
 ///             Box::new(|| {
 ///                 Box::new(PlacedRoomWrapper::new(
@@ -26,9 +26,9 @@ use super::*;
 ///             }),
 ///         ),
 ///     ]))
-///     .gen_with(TraversePortalsDunGen::new(SequentialDunGen::new(&[
-///         &EmptyRoomDunGen::new(Size::new(3, 10)),
-///         &WalledRoomDunGen::new(Size::zero()),
+///     .gen_with(TraversePortalsGenerator::new(SequentialGenerator::new(&[
+///         &EmptyRoomGenerator::new(Size::new(3, 10)),
+///         &WalledRoomGenerator::new(Size::zero()),
 ///     ])))
 ///     .build();
 ///
@@ -49,14 +49,14 @@ use super::*;
 /// }
 /// assert!(count == 5);
 ///```
-pub struct TraversePortalsDunGen<TDunGen>
+pub struct TraversePortalsGenerator<TDunGen>
 where
     TDunGen: DoesAllInstancedDunGen,
 {
     dun_gen: TDunGen,
 }
 
-impl<TDunGen> TraversePortalsDunGen<TDunGen>
+impl<TDunGen> TraversePortalsGenerator<TDunGen>
 where
     TDunGen: DoesAllInstancedDunGen,
 {
@@ -66,7 +66,7 @@ where
     }
 }
 
-impl<TDunGen> DoesDunGen for TraversePortalsDunGen<TDunGen>
+impl<TDunGen> DoesDunGen for TraversePortalsGenerator<TDunGen>
 where
     TDunGen: DoesAllInstancedDunGen,
 {
@@ -88,7 +88,7 @@ where
     }
 }
 
-impl<TDunGen> DoesDunGenPlaced for TraversePortalsDunGen<TDunGen>
+impl<TDunGen> DoesDunGenPlaced for TraversePortalsGenerator<TDunGen>
 where
     TDunGen: DoesAllInstancedDunGen,
 {
@@ -110,7 +110,7 @@ where
     }
 }
 
-impl<TDunGen> DoesAllInstancedDunGen for TraversePortalsDunGen<TDunGen> where
+impl<TDunGen> DoesAllInstancedDunGen for TraversePortalsGenerator<TDunGen> where
     TDunGen: DoesAllInstancedDunGen
 {
 }

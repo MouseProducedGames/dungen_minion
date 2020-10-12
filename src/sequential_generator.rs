@@ -13,10 +13,10 @@ use super::*;
 /// # use dungen_minion::*;
 /// let map =
 ///     DunGen::new(Box::new(RoomHashMap::new()))
-///     .gen_with(SequentialDunGen::new(&[
-///         &EmptyRoomDunGen::new(Size::new(12, 8)),
-///         &WalledRoomDunGen::new(Size::zero()),
-///         &EdgePortalsDunGen::new(
+///     .gen_with(SequentialGenerator::new(&[
+///         &EmptyRoomGenerator::new(Size::new(12, 8)),
+///         &WalledRoomGenerator::new(Size::zero()),
+///         &EdgePortalsGenerator::new(
 ///             5,
 ///             Box::new(|| {
 ///                 Box::new(PlacedRoomWrapper::new(
@@ -26,9 +26,9 @@ use super::*;
 ///             }),
 ///         )
 ///     ]))
-///     .gen_leaf_portals_with(&SequentialDunGen::new(&[
-///         &EmptyRoomDunGen::new(Size::new(3, 10)),
-///         &WalledRoomDunGen::new(Size::zero()),
+///     .gen_leaf_portals_with(&SequentialGenerator::new(&[
+///         &EmptyRoomGenerator::new(Size::new(3, 10)),
+///         &WalledRoomGenerator::new(Size::zero()),
 ///     ]))
 ///     .build();
 ///
@@ -49,18 +49,18 @@ use super::*;
 /// }
 /// assert!(count == 5);
 ///```
-pub struct SequentialDunGen<'a> {
+pub struct SequentialGenerator<'a> {
     dun_gens: &'a [&'a (dyn DoesAllInstancedDunGen)],
 }
 
-impl<'a> SequentialDunGen<'a> {
+impl<'a> SequentialGenerator<'a> {
     /// Creates a new sequential set of dungeon generators.
     pub fn new(dun_gens: &'a [&'a (dyn DoesAllInstancedDunGen)]) -> Self {
         Self { dun_gens }
     }
 }
 
-impl<'a> DoesDunGen for SequentialDunGen<'a> {
+impl<'a> DoesDunGen for SequentialGenerator<'a> {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
         for dun_gen in self.dun_gens {
             dun_gen.dun_gen(target);
@@ -74,7 +74,7 @@ impl<'a> DoesDunGen for SequentialDunGen<'a> {
     }
 }
 
-impl<'a> DoesDunGenPlaced for SequentialDunGen<'a> {
+impl<'a> DoesDunGenPlaced for SequentialGenerator<'a> {
     fn dun_gen_placed(&self, target: &mut dyn SupportsDunGenPlaced) {
         for dun_gen in self.dun_gens {
             dun_gen.dun_gen_placed(target);
@@ -88,4 +88,4 @@ impl<'a> DoesDunGenPlaced for SequentialDunGen<'a> {
     }
 }
 
-impl<'a> DoesAllInstancedDunGen for SequentialDunGen<'a> {}
+impl<'a> DoesAllInstancedDunGen for SequentialGenerator<'a> {}

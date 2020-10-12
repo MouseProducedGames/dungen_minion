@@ -8,7 +8,7 @@ use crate::geometry::*;
 
 /// A generator for walling in a room.
 ///
-/// The `WalledRoomDunGen` can be called statically to generate [`TileType`](enum.TileType.html)::Wall around the perimeter of the room, or with an explicit size to add internal `TileType::Wall`.
+/// The `WalledRoomGenerator` can be called statically to generate [`TileType`](enum.TileType.html)::Wall around the perimeter of the room, or with an explicit size to add internal `TileType::Wall`.
 ///
 /// The walls will be generated as a rectangle defined by a [`Size`](geometry/struct.Size.html) starting from the [0, 0] [`LocalPosition`](geometry/struct.LocalPosition.html).
 ///
@@ -18,8 +18,8 @@ use crate::geometry::*;
 /// # use dungen_minion::*;
 /// let map =
 ///     DunGen::new(Box::new(RoomHashMap::new()))
-///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
-///     .gen::<WalledRoomDunGen::<Size>>()
+///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
+///     .gen::<WalledRoomGenerator::<Size>>()
 ///     .build();
 ///
 /// assert!(*map.size() == Size::new(8, 6));
@@ -56,14 +56,14 @@ use crate::geometry::*;
 /// }
 /// assert!(count == 0);
 /// ```
-pub struct WalledRoomDunGen<TProvidesShapeArea>
+pub struct WalledRoomGenerator<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
     provides_shape_area: TProvidesShapeArea,
 }
 
-impl<TProvidesShapeArea> WalledRoomDunGen<TProvidesShapeArea>
+impl<TProvidesShapeArea> WalledRoomGenerator<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
@@ -75,7 +75,7 @@ where
     }
 }
 
-impl<TProvidesShapeArea> DoesDunGen for WalledRoomDunGen<TProvidesShapeArea>
+impl<TProvidesShapeArea> DoesDunGen for WalledRoomGenerator<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
@@ -109,7 +109,7 @@ where
     }
 }
 
-impl<TProvidesShapeArea> DoesDunGenPlaced for WalledRoomDunGen<TProvidesShapeArea>
+impl<TProvidesShapeArea> DoesDunGenPlaced for WalledRoomGenerator<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
@@ -143,45 +143,45 @@ where
     }
 }
 
-impl<TProvidesShapeArea> DoesDunGenStatic for WalledRoomDunGen<TProvidesShapeArea>
+impl<TProvidesShapeArea> DoesDunGenStatic for WalledRoomGenerator<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
     fn dun_gen_static(target: &mut dyn SupportsDunGen) {
         let size = *target.get_map().size();
-        WalledRoomDunGen::new(size).dun_gen(target);
+        WalledRoomGenerator::new(size).dun_gen(target);
     }
 
     fn dun_gen_map_static(map: &mut Box<dyn Room>) {
         let size = *(map.size());
-        WalledRoomDunGen::new(size).dun_gen_map(map);
+        WalledRoomGenerator::new(size).dun_gen_map(map);
     }
 }
 
-impl<TProvidesShapeArea> DoesDunGenPlacedStatic for WalledRoomDunGen<TProvidesShapeArea>
+impl<TProvidesShapeArea> DoesDunGenPlacedStatic for WalledRoomGenerator<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
     fn dun_gen_placed_static(target: &mut dyn SupportsDunGenPlaced) {
         let size = *target.get_placed_map().size();
-        WalledRoomDunGen::new(size).dun_gen_placed(target);
+        WalledRoomGenerator::new(size).dun_gen_placed(target);
     }
 
     fn dun_gen_placed_map_static(map: &mut Box<dyn PlacedRoom>) {
         let size = *(map.size());
-        WalledRoomDunGen::new(size).dun_gen_placed_map(map);
+        WalledRoomGenerator::new(size).dun_gen_placed_map(map);
     }
 }
 
-impl<TProvidesShapeArea> DoesAllDunGen for WalledRoomDunGen<TProvidesShapeArea> where
+impl<TProvidesShapeArea> DoesAllDunGen for WalledRoomGenerator<TProvidesShapeArea> where
     TProvidesShapeArea: ProvidesShapeArea + Sized
 {
 }
-impl<TProvidesShapeArea> DoesAllInstancedDunGen for WalledRoomDunGen<TProvidesShapeArea> where
+impl<TProvidesShapeArea> DoesAllInstancedDunGen for WalledRoomGenerator<TProvidesShapeArea> where
     TProvidesShapeArea: ProvidesShapeArea + Sized
 {
 }
-impl<TProvidesShapeArea> DoesAllStaticDunGen for WalledRoomDunGen<TProvidesShapeArea> where
+impl<TProvidesShapeArea> DoesAllStaticDunGen for WalledRoomGenerator<TProvidesShapeArea> where
     TProvidesShapeArea: ProvidesShapeArea + Sized
 {
 }

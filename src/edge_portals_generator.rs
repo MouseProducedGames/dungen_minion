@@ -9,7 +9,7 @@ use crate::geometry::*;
 
 /// A generator for adding one or more instances of [`Portal`](struct.Portal.html) to a room.
 ///
-/// The `EdgePortalsDunGen` **cannot** be called statically, but can be called with an explicit count to add one or more internal `Portal` and [`TileType`](enum.TileType.html)::Portal instances.
+/// The `EdgePortalsGenerator` **cannot** be called statically, but can be called with an explicit count to add one or more internal `Portal` and [`TileType`](enum.TileType.html)::Portal instances.
 ///
 /// The portals will be generated randomly on the edge of the room, excluding corners, and are one-way only.
 ///
@@ -18,15 +18,15 @@ use crate::geometry::*;
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
 /// for _ in 0..5_000 {
-///     // We could provide CountRange directly to EdgePortalsDunGen, but that would not let us test
-///     // that we have the right number of portals.
+///     // We could provide CountRange directly to EdgePortalsGenerator, but that would not let us
+///     // test that we have the right number of portals.
 ///     // This CountRange will generate a number in the range [2, 5].
 ///     let num_portals = CountRange::new(2, 5).provide_count();
 ///     let map =
 ///         DunGen::new(Box::new(RoomHashMap::new()))
-///         .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
-///         .gen::<WalledRoomDunGen::<Size>>()
-///         .gen_with(EdgePortalsDunGen::new(
+///         .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
+///         .gen::<WalledRoomGenerator::<Size>>()
+///         .gen_with(EdgePortalsGenerator::new(
 ///             num_portals,
 ///             // A boxed generator which provides the boxed `PlacedRoom`s that will be placed at
 ///             // the end of the portal.
@@ -60,7 +60,7 @@ use crate::geometry::*;
 ///     assert!(portal_count >= 2 && portal_count <= 5);
 /// }
 /// ```
-pub struct EdgePortalsDunGen<TProvidesCount>
+pub struct EdgePortalsGenerator<TProvidesCount>
 where
     TProvidesCount: ProvidesCount + Sized,
 {
@@ -68,7 +68,7 @@ where
     placed_room_box_func: Box<dyn Fn() -> Box<dyn PlacedRoom>>,
 }
 
-impl<TProvidesCount> EdgePortalsDunGen<TProvidesCount>
+impl<TProvidesCount> EdgePortalsGenerator<TProvidesCount>
 where
     TProvidesCount: ProvidesCount + Sized,
 {
@@ -84,7 +84,7 @@ where
     }
 }
 
-impl<TProvidesCount> DoesDunGen for EdgePortalsDunGen<TProvidesCount>
+impl<TProvidesCount> DoesDunGen for EdgePortalsGenerator<TProvidesCount>
 where
     TProvidesCount: ProvidesCount + Sized,
 {
@@ -148,7 +148,7 @@ where
     }
 }
 
-impl<TProvidesCount> DoesDunGenPlaced for EdgePortalsDunGen<TProvidesCount>
+impl<TProvidesCount> DoesDunGenPlaced for EdgePortalsGenerator<TProvidesCount>
 where
     TProvidesCount: ProvidesCount + Sized,
 {
@@ -212,7 +212,7 @@ where
     }
 }
 
-impl<TProvidesCount> DoesAllInstancedDunGen for EdgePortalsDunGen<TProvidesCount> where
+impl<TProvidesCount> DoesAllInstancedDunGen for EdgePortalsGenerator<TProvidesCount> where
     TProvidesCount: ProvidesCount + Sized
 {
 }

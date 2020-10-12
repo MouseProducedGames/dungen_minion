@@ -44,8 +44,8 @@ impl DunGenPlaced {
     ///         Position::new(0, 0),
     ///         RoomHashMap::new()
     ///         )))
-    ///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
-    ///     .gen::<WalledRoomDunGen::<Size>>()
+    ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
+    ///     .gen::<WalledRoomGenerator::<Size>>()
     ///     // At this point, the generator will return a walled room at position (0, 0) that is
     ///     // 8 tiles wide by 6 tiles high.
     ///     .build();
@@ -67,10 +67,10 @@ impl DunGenPlaced {
     ///         Position::new(0, 0),
     ///         RoomHashMap::new()
     ///         )))
-    ///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
-    ///     // WalledRoomDunGen can be called statically, as it can take its `Size` from the `Room`
+    ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
+    ///     // WalledRoomGenerator can be called statically, as it can take its `Size` from the `Room`
     ///     // it is called on.
-    ///     .gen::<WalledRoomDunGen::<Size>>()
+    ///     .gen::<WalledRoomGenerator::<Size>>()
     ///     // Other generaton.
     ///     .build();
     ///
@@ -106,9 +106,9 @@ impl DunGenPlaced {
     ///         Position::new(0, 0),
     ///         RoomHashMap::new()
     ///         )))
-    ///     .gen_with(EmptyRoomDunGen::new(Size::new(12, 8)))
-    ///     .gen::<WalledRoomDunGen::<Size>>()
-    ///     .gen_leaf_portals_with(&EdgePortalsDunGen::new(
+    ///     .gen_with(EmptyRoomGenerator::new(Size::new(12, 8)))
+    ///     .gen::<WalledRoomGenerator::<Size>>()
+    ///     .gen_leaf_portals_with(&EdgePortalsGenerator::new(
     ///         5,
     ///         Box::new(|| {
     ///             Box::new(PlacedRoomWrapper::new(
@@ -117,10 +117,10 @@ impl DunGenPlaced {
     ///             ))
     ///         }),
     ///     ))
-    ///     .gen_leaf_portals_with(&EmptyRoomDunGen::new(Size::new(3, 10)))
-    ///     // Information does not need to be provided to the WalledRoomDunGen at this point, as
+    ///     .gen_leaf_portals_with(&EmptyRoomGenerator::new(Size::new(3, 10)))
+    ///     // Information does not need to be provided to the WalledRoomGenerator at this point, as
     ///     // it can take its Size information from the maps it is called on.
-    ///     .gen_leaf_portals_static::<WalledRoomDunGen::<Size>>()
+    ///     .gen_leaf_portals_static::<WalledRoomGenerator::<Size>>()
     ///     .build();
     ///
     /// assert!(*map.size() == Size::new(12, 8));
@@ -176,14 +176,14 @@ impl DunGenPlaced {
     ///         Position::new(0, 0),
     ///         RoomHashMap::new()
     ///         )))
-    ///     .gen_with(EmptyRoomDunGen::new(Size::new(12, 8)))
-    ///     .gen::<WalledRoomDunGen::<Size>>()
-    ///     // EdgePortalsDunGen is called as an instance, as it needs information about how many
+    ///     .gen_with(EmptyRoomGenerator::new(Size::new(12, 8)))
+    ///     .gen::<WalledRoomGenerator::<Size>>()
+    ///     // EdgePortalsGenerator is called as an instance, as it needs information about how many
     ///     // portals to generate, and a function that generates new boxed `PlacedRoom` instances
     ///     // to place at the end of portals.
     ///     // Since the primary room does not (yet!) have any portals, it will have portals added
     ///     // to it.
-    ///     .gen_leaf_portals_with(&EdgePortalsDunGen::new(
+    ///     .gen_leaf_portals_with(&EdgePortalsGenerator::new(
     ///         5,
     ///         Box::new(|| {
     ///             Box::new(PlacedRoomWrapper::new(
@@ -194,9 +194,9 @@ impl DunGenPlaced {
     ///     ))
     ///     // Since the added rooms do not yet have portals (nor a size), they will be given a
     ///     // size of 3 tiles wide by 10 tiles long. We don't need to worry about the rotation of
-    ///     // the generated rooms - that's entirely handled through Portal and EdgePortalsDunGen.
-    ///     .gen_leaf_portals_with(&EmptyRoomDunGen::new(Size::new(3, 10)))
-    ///     .gen_leaf_portals_static::<WalledRoomDunGen::<Size>>()
+    ///     // the generated rooms - that's entirely handled through Portal and EdgePortalsGenerator.
+    ///     .gen_leaf_portals_with(&EmptyRoomGenerator::new(Size::new(3, 10)))
+    ///     .gen_leaf_portals_static::<WalledRoomGenerator::<Size>>()
     ///     .build();
     ///
     /// assert!(*map.size() == Size::new(12, 8));
@@ -249,9 +249,9 @@ impl DunGenPlaced {
     ///         Position::new(0, 0),
     ///         RoomHashMap::new()
     ///         )))
-    ///     // EmptyRoomDunGen is called as an instance, as it needs information about how large a
+    ///     // EmptyRoomGenerator is called as an instance, as it needs information about how large a
     ///     // room to generate.
-    ///     .gen_with(EmptyRoomDunGen::new(Size::new(8, 6)))
+    ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
     ///     .build();
     ///
     /// assert!(*map.size() == Size::new(8, 6));

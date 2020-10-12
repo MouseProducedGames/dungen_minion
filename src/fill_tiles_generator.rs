@@ -8,7 +8,7 @@ use crate::geometry::*;
 
 /// A generator for filling an area with a [`TileType`](enum.TileType.html).
 ///
-/// `FillTilesDunGen` can be called as an instance with an explicit `TileType` and [`ShapeArea`](geometry/struct.ShapeArea.html) to add that `TileType` to the given `ShapeArea`.
+/// `FillTilesGenerator` can be called as an instance with an explicit `TileType` and [`ShapeArea`](geometry/struct.ShapeArea.html) to add that `TileType` to the given `ShapeArea`.
 ///
 /// The tiles will be generated as a rectangle defined by the `ShapeArea` .
 ///
@@ -18,8 +18,8 @@ use crate::geometry::*;
 /// # use dungen_minion::*;
 /// let map =
 ///     DunGen::new(Box::new(RoomHashMap::new()))
-///     .gen_with(FillTilesDunGen::new(Size::new(12, 8), TileType::Floor))
-///     .gen_with(FillTilesDunGen::new(
+///     .gen_with(FillTilesGenerator::new(Size::new(12, 8), TileType::Floor))
+///     .gen_with(FillTilesGenerator::new(
 ///         ShapeArea::new(
 ///             ShapePosition::new(3, 2),
 ///             Size::new(6, 4)),
@@ -57,7 +57,7 @@ use crate::geometry::*;
 /// }
 /// assert!(count == 0);
 /// ```
-pub struct FillTilesDunGen<TProvidesShapeArea>
+pub struct FillTilesGenerator<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
@@ -65,7 +65,7 @@ where
     tile_type_fill: TileType,
 }
 
-impl<TProvidesShapeArea> FillTilesDunGen<TProvidesShapeArea>
+impl<TProvidesShapeArea> FillTilesGenerator<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
@@ -78,7 +78,7 @@ where
     }
 }
 
-impl<TProvidesShapeArea> DoesDunGen for FillTilesDunGen<TProvidesShapeArea>
+impl<TProvidesShapeArea> DoesDunGen for FillTilesGenerator<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
@@ -108,7 +108,7 @@ where
     }
 }
 
-impl<TProvidesShapeArea> DoesDunGenPlaced for FillTilesDunGen<TProvidesShapeArea>
+impl<TProvidesShapeArea> DoesDunGenPlaced for FillTilesGenerator<TProvidesShapeArea>
 where
     TProvidesShapeArea: ProvidesShapeArea + Sized,
 {
@@ -137,7 +137,7 @@ where
     }
 }
 
-impl<TProvidesShapeArea> DoesAllInstancedDunGen for FillTilesDunGen<TProvidesShapeArea> where
+impl<TProvidesShapeArea> DoesAllInstancedDunGen for FillTilesGenerator<TProvidesShapeArea> where
     TProvidesShapeArea: ProvidesShapeArea + Sized
 {
 }
