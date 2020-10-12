@@ -45,7 +45,7 @@ use crate::geometry::*;
 ///     assert!(map.portal_count() >= 2 && map.portal_count() <= 5);
 ///     let mut portal_count = 0;
 ///     for portal in map.portals() {
-///         assert!(*portal.target().size() == Size::new(0, 0));
+///         assert!(*portal.target().size() == Size::zero());
 ///         assert!(
 ///             portal.target().tile_type_at_local(
 ///                 ShapePosition::new(0, 0)

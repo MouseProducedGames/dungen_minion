@@ -42,8 +42,8 @@ use super::*;
 ///     ))
 ///     // The if-check ensures that we only generate on maps that haven't already been generated.
 ///     .gen_with(TraversePortalsDunGen::new(IfMapDunGen::new(
-///         |map| *map.size() == Size::new(0, 0),
-///         |placed_map| *placed_map.size() == Size::new(0, 0),
+///         |map| *map.size() == Size::zero(),
+///         |placed_map| *placed_map.size() == Size::zero(),
 ///         SequentialDunGen::new(&[
 ///             &EmptyRoomDunGen::new(Size::new(3, 10)),
 ///             &WalledRoomDunGen::new(Size::new(3, 10)),

@@ -86,7 +86,13 @@ where
 
     fn dun_gen_map(&self, map: &mut Box<dyn Room>) {
         let shape_area = self.provides_shape_area.provide_shape_area();
-        if shape_area.width() == 0 || shape_area.height() == 0 {
+        let shape_area = if shape_area.width() > 0 || shape_area.height() > 0 {
+            shape_area
+        } else {
+            ShapeArea::from(*map.size())
+        };
+
+        if *shape_area.size() == Size::zero() {
             return;
         }
 
@@ -114,7 +120,13 @@ where
 
     fn dun_gen_placed_map(&self, map: &mut Box<dyn PlacedRoom>) {
         let shape_area = self.provides_shape_area.provide_shape_area();
-        if shape_area.width() == 0 || shape_area.height() == 0 {
+        let shape_area = if shape_area.width() > 0 || shape_area.height() > 0 {
+            shape_area
+        } else {
+            ShapeArea::from(*map.size())
+        };
+
+        if *shape_area.size() == Size::zero() {
             return;
         }
 
