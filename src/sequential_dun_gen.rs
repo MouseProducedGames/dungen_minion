@@ -87,3 +87,5 @@ impl<'a> DoesDunGenPlaced for SequentialDunGen<'a> {
         }
     }
 }
+
+impl<'a> DoesAllInstancedDunGen for SequentialDunGen<'a> {}
