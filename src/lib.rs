@@ -56,6 +56,7 @@ mod dun_gen_placed;
 mod edge_portals_dun_gen;
 mod empty_room_dun_gen;
 mod fill_tiles_dun_gen;
+mod sequential_dun_gen;
 mod walled_room_dun_gen;
 
 pub use dun_gen::DunGen;
@@ -63,6 +64,7 @@ pub use dun_gen_placed::DunGenPlaced;
 pub use edge_portals_dun_gen::EdgePortalsDunGen;
 pub use empty_room_dun_gen::EmptyRoomDunGen;
 pub use fill_tiles_dun_gen::FillTilesDunGen;
+pub use sequential_dun_gen::SequentialDunGen;
 pub use walled_room_dun_gen::WalledRoomDunGen;
 
 #[cfg(test)]

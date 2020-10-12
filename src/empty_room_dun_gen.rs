@@ -3,10 +3,7 @@
 // Standard includes.
 
 // Internal includes.
-use super::{
-    DoesDunGen, DoesDunGenPlaced, DoesDunGenPlacedStatic, DoesDunGenStatic, FillTilesDunGen,
-    PlacedRoom, Room, SupportsDunGen, SupportsDunGenPlaced, TileType,
-};
+use super::*;
 use crate::geometry::*;
 
 /// A generator for creating an area of [`TileType`](enum.TileType.html)::Floor.
@@ -118,4 +115,17 @@ where
         EmptyRoomDunGen::new(ShapeArea::new(ShapePosition::new(0, 0), size))
             .dun_gen_placed_map(map);
     }
+}
+
+impl<TProvidesShapeArea> DoesAllDunGen for EmptyRoomDunGen<TProvidesShapeArea> where
+    TProvidesShapeArea: ProvidesShapeArea + Sized
+{
+}
+impl<TProvidesShapeArea> DoesAllInstancedDunGen for EmptyRoomDunGen<TProvidesShapeArea> where
+    TProvidesShapeArea: ProvidesShapeArea + Sized
+{
+}
+impl<TProvidesShapeArea> DoesAllStaticDunGen for EmptyRoomDunGen<TProvidesShapeArea> where
+    TProvidesShapeArea: ProvidesShapeArea + Sized
+{
 }

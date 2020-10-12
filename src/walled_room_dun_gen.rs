@@ -3,10 +3,7 @@
 // Standard includes.
 
 // Internal includes.
-use super::{
-    DoesDunGen, DoesDunGenPlaced, DoesDunGenPlacedStatic, DoesDunGenStatic, PlacedRoom, Room,
-    SupportsDunGen, SupportsDunGenPlaced, TileType,
-};
+use super::*;
 use crate::geometry::*;
 
 /// A generator for walling in a room.
@@ -162,4 +159,17 @@ where
         let size = *(map.size());
         WalledRoomDunGen::new(size).dun_gen_placed_map(map);
     }
+}
+
+impl<TProvidesShapeArea> DoesAllDunGen for WalledRoomDunGen<TProvidesShapeArea> where
+    TProvidesShapeArea: ProvidesShapeArea + Sized
+{
+}
+impl<TProvidesShapeArea> DoesAllInstancedDunGen for WalledRoomDunGen<TProvidesShapeArea> where
+    TProvidesShapeArea: ProvidesShapeArea + Sized
+{
+}
+impl<TProvidesShapeArea> DoesAllStaticDunGen for WalledRoomDunGen<TProvidesShapeArea> where
+    TProvidesShapeArea: ProvidesShapeArea + Sized
+{
 }

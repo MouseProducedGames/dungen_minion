@@ -4,7 +4,7 @@ use rand::{thread_rng, Rng};
 // Standard includes.
 
 // Internal includes.
-use super::{DoesDunGen, DoesDunGenPlaced, PlacedRoom, Room, SupportsDunGen, SupportsDunGenPlaced};
+use super::*;
 use crate::geometry::*;
 
 /// A generator for adding one or more instances of [`Portal`](struct.Portal.html) to a room.
@@ -210,4 +210,9 @@ where
             }
         }
     }
+}
+
+impl<TProvidesCount> DoesAllInstancedDunGen for EdgePortalsDunGen<TProvidesCount> where
+    TProvidesCount: ProvidesCount + Sized
+{
 }

@@ -3,9 +3,7 @@
 // Standard includes.
 
 // Internal includes.
-use super::{
-    DoesDunGen, DoesDunGenPlaced, PlacedRoom, Room, SupportsDunGen, SupportsDunGenPlaced, TileType,
-};
+use super::*;
 use crate::geometry::*;
 
 /// A generator for filling an area with a [`TileType`](enum.TileType.html).
@@ -126,4 +124,9 @@ where
             }
         }
     }
+}
+
+impl<TProvidesShapeArea> DoesAllInstancedDunGen for FillTilesDunGen<TProvidesShapeArea> where
+    TProvidesShapeArea: ProvidesShapeArea + Sized
+{
 }
