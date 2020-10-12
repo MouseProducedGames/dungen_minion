@@ -15,7 +15,7 @@ use super::*;
 ///     DunGen::new(Box::new(RoomHashMap::new()))
 ///     .gen_with(SequentialDunGen::new(&[
 ///         &EmptyRoomDunGen::new(Size::new(12, 8)),
-///         &WalledRoomDunGen::new(Size::new(12, 8)),
+///         &WalledRoomDunGen::new(Size::zero()),
 ///         &EdgePortalsDunGen::new(
 ///             1,
 ///             Box::new(|| {
@@ -28,7 +28,7 @@ use super::*;
 ///     ]))
 ///     .gen_with(TraversePortalsDunGen::new(SequentialDunGen::new(&[
 ///         &EmptyRoomDunGen::new(Size::new(8, 6)),
-///         &WalledRoomDunGen::new(Size::new(8, 6)),
+///         &WalledRoomDunGen::new(Size::zero()),
 ///     ])))
 ///     .gen_with(
 ///         EdgePortalsDunGen::new(
@@ -46,7 +46,7 @@ use super::*;
 ///         |placed_map| *placed_map.size() == Size::zero(),
 ///         SequentialDunGen::new(&[
 ///             &EmptyRoomDunGen::new(Size::new(3, 10)),
-///             &WalledRoomDunGen::new(Size::new(3, 10)),
+///             &WalledRoomDunGen::new(Size::zero()),
 ///         ])
 ///     )))
 ///     .build();

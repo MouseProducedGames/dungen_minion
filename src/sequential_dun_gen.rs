@@ -15,7 +15,7 @@ use super::*;
 ///     DunGen::new(Box::new(RoomHashMap::new()))
 ///     .gen_with(SequentialDunGen::new(&[
 ///         &EmptyRoomDunGen::new(Size::new(12, 8)),
-///         &WalledRoomDunGen::new(Size::new(12, 8)),
+///         &WalledRoomDunGen::new(Size::zero()),
 ///         &EdgePortalsDunGen::new(
 ///             5,
 ///             Box::new(|| {
@@ -28,7 +28,7 @@ use super::*;
 ///     ]))
 ///     .gen_leaf_portals_with(&SequentialDunGen::new(&[
 ///         &EmptyRoomDunGen::new(Size::new(3, 10)),
-///         &WalledRoomDunGen::new(Size::new(3, 10)),
+///         &WalledRoomDunGen::new(Size::zero()),
 ///     ]))
 ///     .build();
 ///
