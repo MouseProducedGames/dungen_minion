@@ -41,92 +41,34 @@ use crate::geometry::*;
 /// }
 /// assert!(count == 0);
 /// ```
-pub struct EmptyRoomGenerator<TProvidesShapeArea>
+pub struct EmptyRoomGenerator<TProvidesArea>
 where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
+    TProvidesArea: ProvidesArea + Sized,
 {
-    forward_to: FillTilesGenerator<TProvidesShapeArea>,
+    forward_to: FillTilesGenerator<TProvidesArea>,
 }
 
-impl<TProvidesShapeArea> EmptyRoomGenerator<TProvidesShapeArea>
+impl<TProvidesArea> EmptyRoomGenerator<TProvidesArea>
 where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
+    TProvidesArea: ProvidesArea + Sized,
 {
     /// Creates a new generator for adding flooring to a room.
-    pub fn new(provides_shape_area: TProvidesShapeArea) -> Self {
+    pub fn new(provides_area: TProvidesArea) -> Self {
         Self {
-            forward_to: FillTilesGenerator::new(provides_shape_area, TileType::Floor),
+            forward_to: FillTilesGenerator::new(provides_area, TileType::Floor),
         }
     }
 }
 
-impl<TProvidesShapeArea> DoesDunGen for EmptyRoomGenerator<TProvidesShapeArea>
+impl<TProvidesArea> DoesDunGen for EmptyRoomGenerator<TProvidesArea>
 where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
+    TProvidesArea: ProvidesArea + Sized,
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
         self.forward_to.dun_gen(target)
     }
 
-    fn dun_gen_map(&self, map: &mut Box<dyn Room>) {
-        self.forward_to.dun_gen_map(map)
+    fn dun_gen_map(&self, map_id: MapId) {
+        self.forward_to.dun_gen_map(map_id)
     }
-}
-
-impl<TProvidesShapeArea> DoesDunGenPlaced for EmptyRoomGenerator<TProvidesShapeArea>
-where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
-{
-    fn dun_gen_placed(&self, target: &mut dyn SupportsDunGenPlaced) {
-        self.forward_to.dun_gen_placed(target)
-    }
-
-    fn dun_gen_placed_map(&self, map: &mut Box<dyn PlacedRoom>) {
-        self.forward_to.dun_gen_placed_map(map)
-    }
-}
-
-impl<TProvidesShapeArea> DoesDunGenStatic for EmptyRoomGenerator<TProvidesShapeArea>
-where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
-{
-    fn dun_gen_static(target: &mut dyn SupportsDunGen) {
-        let size = *(target.get_map().size());
-        EmptyRoomGenerator::new(ShapeArea::new(ShapePosition::new(0, 0), size)).dun_gen(target);
-    }
-
-    fn dun_gen_map_static(map: &mut Box<dyn Room>) {
-        let size = *(map.size());
-        EmptyRoomGenerator::new(ShapeArea::new(ShapePosition::new(0, 0), size)).dun_gen_map(map);
-    }
-}
-
-impl<TProvidesShapeArea> DoesDunGenPlacedStatic for EmptyRoomGenerator<TProvidesShapeArea>
-where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
-{
-    fn dun_gen_placed_static(target: &mut dyn SupportsDunGenPlaced) {
-        let size = *(target.get_placed_map().size());
-        EmptyRoomGenerator::new(ShapeArea::new(ShapePosition::new(0, 0), size))
-            .dun_gen_placed(target);
-    }
-
-    fn dun_gen_placed_map_static(map: &mut Box<dyn PlacedRoom>) {
-        let size = *(map.size());
-        EmptyRoomGenerator::new(ShapeArea::new(ShapePosition::new(0, 0), size))
-            .dun_gen_placed_map(map);
-    }
-}
-
-impl<TProvidesShapeArea> DoesAllDunGen for EmptyRoomGenerator<TProvidesShapeArea> where
-    TProvidesShapeArea: ProvidesShapeArea + Sized
-{
-}
-impl<TProvidesShapeArea> DoesAllInstancedDunGen for EmptyRoomGenerator<TProvidesShapeArea> where
-    TProvidesShapeArea: ProvidesShapeArea + Sized
-{
-}
-impl<TProvidesShapeArea> DoesAllStaticDunGen for EmptyRoomGenerator<TProvidesShapeArea> where
-    TProvidesShapeArea: ProvidesShapeArea + Sized
-{
 }

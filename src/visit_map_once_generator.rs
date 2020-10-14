@@ -1,6 +1,8 @@
 // External includes.
 
 // Standard includes.
+use std::collections::HashSet;
+use std::sync::RwLock;
 
 // Internal includes.
 use super::*;
@@ -73,41 +75,52 @@ use super::*;
 /// }
 /// assert!(count == 5);
 ///```
-pub struct IfMapThenGenerator<TDunGen, TMapFunc>
+pub struct VisitMapOnceGenerator<TDunGen>
 where
     TDunGen: DoesDunGen,
-    TMapFunc: Fn(MapId) -> bool,
 {
-    map_func: TMapFunc,
+    visited_maps: RwLock<HashSet<MapId>>,
     dun_gen: TDunGen,
 }
 
-impl<TDunGen, TMapFunc> IfMapThenGenerator<TDunGen, TMapFunc>
+impl<TDunGen> VisitMapOnceGenerator<TDunGen>
 where
     TDunGen: DoesDunGen,
-    TMapFunc: Fn(MapId) -> bool,
 {
     /// Creates a new conditional dungeon generator.
-    pub fn new(map_func: TMapFunc, dun_gen: TDunGen) -> Self {
-        Self { map_func, dun_gen }
+    pub fn new(dun_gen: TDunGen) -> Self {
+        Self {
+            visited_maps: RwLock::new(HashSet::new()),
+            dun_gen,
+        }
     }
 }
 
-impl<TDunGen, TMapFunc> DoesDunGen for IfMapThenGenerator<TDunGen, TMapFunc>
+impl<TDunGen> DoesDunGen for VisitMapOnceGenerator<TDunGen>
 where
     TDunGen: DoesDunGen,
-    TMapFunc: Fn(MapId) -> bool,
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
-        let map_id = target.get_map_id();
-        if (self.map_func)(map_id) {
-            self.dun_gen.dun_gen(target);
+        {
+            let mut visited_maps = self.visited_maps.write().unwrap();
+            if visited_maps.contains(&target.get_map_id()) {
+                return;
+            }
+
+            visited_maps.insert(target.get_map_id());
         }
+        self.dun_gen.dun_gen(target);
     }
 
     fn dun_gen_map(&self, map_id: MapId) {
-        if (self.map_func)(map_id) {
-            self.dun_gen.dun_gen_map(map_id);
+        {
+            let mut visited_maps = self.visited_maps.write().unwrap();
+            if visited_maps.contains(&map_id) {
+                return;
+            }
+
+            visited_maps.insert(map_id);
         }
+        self.dun_gen.dun_gen_map(map_id);
     }
 }

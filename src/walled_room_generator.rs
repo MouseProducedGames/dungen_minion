@@ -56,132 +56,56 @@ use crate::geometry::*;
 /// }
 /// assert!(count == 0);
 /// ```
-pub struct WalledRoomGenerator<TProvidesShapeArea>
+pub struct WalledRoomGenerator<TProvidesArea>
 where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
+    TProvidesArea: ProvidesArea + Sized,
 {
-    provides_shape_area: TProvidesShapeArea,
+    provides_area: TProvidesArea,
 }
 
-impl<TProvidesShapeArea> WalledRoomGenerator<TProvidesShapeArea>
+impl<TProvidesArea> WalledRoomGenerator<TProvidesArea>
 where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
+    TProvidesArea: ProvidesArea + Sized,
 {
     /// Creates a new generator for walling in a room.
-    pub fn new(provides_shape_area: TProvidesShapeArea) -> Self {
-        Self {
-            provides_shape_area,
-        }
+    pub fn new(provides_area: TProvidesArea) -> Self {
+        Self { provides_area }
     }
 }
 
-impl<TProvidesShapeArea> DoesDunGen for WalledRoomGenerator<TProvidesShapeArea>
+impl<TProvidesArea> DoesDunGen for WalledRoomGenerator<TProvidesArea>
 where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
+    TProvidesArea: ProvidesArea + Sized,
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
-        let map = target.get_map_mut();
-        self.dun_gen_map(map);
+        let map_id = target.get_map_id();
+        self.dun_gen_map(map_id);
     }
 
-    fn dun_gen_map(&self, map: &mut Box<dyn Room>) {
-        let shape_area = self.provides_shape_area.provide_shape_area();
-        let shape_area = if shape_area.width() > 0 || shape_area.height() > 0 {
-            shape_area
+    fn dun_gen_map(&self, map_id: MapId) {
+        let maps = &MAPS.read()[map_id];
+        let map = &mut maps.write();
+
+        let area = self.provides_area.provide_area();
+        let area = if area.width() > 0 || area.height() > 0 {
+            area
         } else {
-            ShapeArea::from(*map.size())
+            Area::from(*map.size())
         };
 
-        if *shape_area.size() == Size::zero() {
+        if *area.size() == Size::zero() {
             return;
         }
 
-        for x in shape_area.shape_position().x()..=shape_area.right() {
-            map.tile_type_at_local_set(ShapePosition::new(x, 0), TileType::Wall);
+        for x in area.position().x()..=area.right() {
+            map.tile_type_at_local_set(Position::new(x, 0), TileType::Wall);
         }
-        for y in shape_area.shape_position().y()..=shape_area.bottom() {
-            map.tile_type_at_local_set(ShapePosition::new(0, y), TileType::Wall);
-            map.tile_type_at_local_set(ShapePosition::new(shape_area.right(), y), TileType::Wall);
+        for y in area.position().y()..=area.bottom() {
+            map.tile_type_at_local_set(Position::new(0, y), TileType::Wall);
+            map.tile_type_at_local_set(Position::new(area.right(), y), TileType::Wall);
         }
-        for x in shape_area.shape_position().x()..=shape_area.right() {
-            map.tile_type_at_local_set(ShapePosition::new(x, shape_area.bottom()), TileType::Wall);
-        }
-    }
-}
-
-impl<TProvidesShapeArea> DoesDunGenPlaced for WalledRoomGenerator<TProvidesShapeArea>
-where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
-{
-    fn dun_gen_placed(&self, target: &mut dyn SupportsDunGenPlaced) {
-        let map = target.get_placed_map_mut();
-        self.dun_gen_placed_map(map);
-    }
-
-    fn dun_gen_placed_map(&self, map: &mut Box<dyn PlacedRoom>) {
-        let shape_area = self.provides_shape_area.provide_shape_area();
-        let shape_area = if shape_area.width() > 0 || shape_area.height() > 0 {
-            shape_area
-        } else {
-            ShapeArea::from(*map.size())
-        };
-
-        if *shape_area.size() == Size::zero() {
-            return;
-        }
-
-        for x in shape_area.shape_position().x()..=shape_area.right() {
-            map.tile_type_at_local_set(ShapePosition::new(x, 0), TileType::Wall);
-        }
-        for y in shape_area.shape_position().y()..=shape_area.bottom() {
-            map.tile_type_at_local_set(ShapePosition::new(0, y), TileType::Wall);
-            map.tile_type_at_local_set(ShapePosition::new(shape_area.right(), y), TileType::Wall);
-        }
-        for x in shape_area.shape_position().x()..=shape_area.right() {
-            map.tile_type_at_local_set(ShapePosition::new(x, shape_area.bottom()), TileType::Wall);
+        for x in area.position().x()..=area.right() {
+            map.tile_type_at_local_set(Position::new(x, area.bottom()), TileType::Wall);
         }
     }
-}
-
-impl<TProvidesShapeArea> DoesDunGenStatic for WalledRoomGenerator<TProvidesShapeArea>
-where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
-{
-    fn dun_gen_static(target: &mut dyn SupportsDunGen) {
-        let size = *target.get_map().size();
-        WalledRoomGenerator::new(size).dun_gen(target);
-    }
-
-    fn dun_gen_map_static(map: &mut Box<dyn Room>) {
-        let size = *(map.size());
-        WalledRoomGenerator::new(size).dun_gen_map(map);
-    }
-}
-
-impl<TProvidesShapeArea> DoesDunGenPlacedStatic for WalledRoomGenerator<TProvidesShapeArea>
-where
-    TProvidesShapeArea: ProvidesShapeArea + Sized,
-{
-    fn dun_gen_placed_static(target: &mut dyn SupportsDunGenPlaced) {
-        let size = *target.get_placed_map().size();
-        WalledRoomGenerator::new(size).dun_gen_placed(target);
-    }
-
-    fn dun_gen_placed_map_static(map: &mut Box<dyn PlacedRoom>) {
-        let size = *(map.size());
-        WalledRoomGenerator::new(size).dun_gen_placed_map(map);
-    }
-}
-
-impl<TProvidesShapeArea> DoesAllDunGen for WalledRoomGenerator<TProvidesShapeArea> where
-    TProvidesShapeArea: ProvidesShapeArea + Sized
-{
-}
-impl<TProvidesShapeArea> DoesAllInstancedDunGen for WalledRoomGenerator<TProvidesShapeArea> where
-    TProvidesShapeArea: ProvidesShapeArea + Sized
-{
-}
-impl<TProvidesShapeArea> DoesAllStaticDunGen for WalledRoomGenerator<TProvidesShapeArea> where
-    TProvidesShapeArea: ProvidesShapeArea + Sized
-{
 }

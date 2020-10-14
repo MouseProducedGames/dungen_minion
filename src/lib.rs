@@ -52,25 +52,27 @@ pub use dungen_minion_rooms::*;
 
 // Internal includes.
 mod dun_gen;
-mod dun_gen_placed;
 mod edge_portals_generator;
 mod empty_room_generator;
 mod fill_tiles_generator;
 mod if_map_then_generator;
+mod reciprocate_portals_generator;
 mod sequential_generator;
 mod traverse_portals_generator;
 mod traverse_this_and_portals_generator;
+mod visit_map_once_generator;
 mod walled_room_generator;
 
 pub use dun_gen::DunGen;
-pub use dun_gen_placed::DunGenPlaced;
 pub use edge_portals_generator::EdgePortalsGenerator;
 pub use empty_room_generator::EmptyRoomGenerator;
 pub use fill_tiles_generator::FillTilesGenerator;
 pub use if_map_then_generator::IfMapThenGenerator;
+pub use reciprocate_portals_generator::ReciprocatePortalsGenerator;
 pub use sequential_generator::SequentialGenerator;
 pub use traverse_portals_generator::TraversePortalsGenerator;
 pub use traverse_this_and_portals_generator::TraverseThisAndPortalsGenerator;
+pub use visit_map_once_generator::VisitMapOnceGenerator;
 pub use walled_room_generator::WalledRoomGenerator;
 
 #[cfg(test)]

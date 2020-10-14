@@ -50,12 +50,12 @@ use super::*;
 /// assert!(count == 5);
 ///```
 pub struct SequentialGenerator<'a> {
-    dun_gens: &'a [&'a (dyn DoesAllInstancedDunGen)],
+    dun_gens: &'a [&'a (dyn DoesDunGen)],
 }
 
 impl<'a> SequentialGenerator<'a> {
     /// Creates a new sequential set of dungeon generators.
-    pub fn new(dun_gens: &'a [&'a (dyn DoesAllInstancedDunGen)]) -> Self {
+    pub fn new(dun_gens: &'a [&'a (dyn DoesDunGen)]) -> Self {
         Self { dun_gens }
     }
 }
@@ -67,25 +67,9 @@ impl<'a> DoesDunGen for SequentialGenerator<'a> {
         }
     }
 
-    fn dun_gen_map(&self, map: &mut Box<dyn Room>) {
+    fn dun_gen_map(&self, map_id: MapId) {
         for dun_gen in self.dun_gens {
-            dun_gen.dun_gen_map(map);
+            dun_gen.dun_gen_map(map_id);
         }
     }
 }
-
-impl<'a> DoesDunGenPlaced for SequentialGenerator<'a> {
-    fn dun_gen_placed(&self, target: &mut dyn SupportsDunGenPlaced) {
-        for dun_gen in self.dun_gens {
-            dun_gen.dun_gen_placed(target);
-        }
-    }
-
-    fn dun_gen_placed_map(&self, map: &mut Box<dyn PlacedRoom>) {
-        for dun_gen in self.dun_gens {
-            dun_gen.dun_gen_placed_map(map);
-        }
-    }
-}
-
-impl<'a> DoesAllInstancedDunGen for SequentialGenerator<'a> {}

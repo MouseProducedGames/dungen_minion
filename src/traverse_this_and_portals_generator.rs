@@ -52,14 +52,14 @@ use super::*;
 ///```
 pub struct TraverseThisAndPortalsGenerator<TDunGen>
 where
-    TDunGen: DoesAllInstancedDunGen,
+    TDunGen: DoesDunGen,
 {
     dun_gen: TDunGen,
 }
 
 impl<TDunGen> TraverseThisAndPortalsGenerator<TDunGen>
 where
-    TDunGen: DoesAllInstancedDunGen,
+    TDunGen: DoesDunGen,
 {
     /// Creates a dungeon generator that traverses the current map and portals.
     pub fn new(dun_gen: TDunGen) -> Self {
@@ -69,49 +69,40 @@ where
 
 impl<TDunGen> DoesDunGen for TraverseThisAndPortalsGenerator<TDunGen>
 where
-    TDunGen: DoesAllInstancedDunGen,
+    TDunGen: DoesDunGen,
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
-        let map = target.get_map_mut();
-        self.dun_gen.dun_gen_map(map);
-        for portal_mut in map.portals_mut() {
-            let map = portal_mut.target_mut();
-            self.dun_gen.dun_gen_placed_map(map);
+        let mut target_map_ids = Vec::new();
+        {
+            self.dun_gen.dun_gen(target);
+            let maps = &MAPS.read()[target.get_map_id()];
+            let map = &maps.read();
+            for portal in map.portals() {
+                let map_id = portal.target();
+                target_map_ids.push(map_id);
+            }
+        }
+
+        let target_map_ids = target_map_ids;
+        for target_map_id in target_map_ids {
+            self.dun_gen.dun_gen_map(target_map_id);
         }
     }
 
-    fn dun_gen_map(&self, map: &mut Box<dyn Room>) {
-        self.dun_gen.dun_gen_map(map);
-        for portal_mut in map.portals_mut() {
-            let map = portal_mut.target_mut();
-            self.dun_gen.dun_gen_placed_map(map);
+    fn dun_gen_map(&self, map_id: MapId) {
+        let mut target_map_ids = Vec::new();
+        {
+            self.dun_gen.dun_gen_map(map_id);
+            let maps = &MAPS.read()[map_id];
+            let map = &maps.read();
+            for portal in map.portals() {
+                let map_id = portal.target();
+                target_map_ids.push(map_id);
+            }
+        }
+
+        for target_map_id in target_map_ids {
+            self.dun_gen.dun_gen_map(target_map_id);
         }
     }
-}
-
-impl<TDunGen> DoesDunGenPlaced for TraverseThisAndPortalsGenerator<TDunGen>
-where
-    TDunGen: DoesAllInstancedDunGen,
-{
-    fn dun_gen_placed(&self, target: &mut dyn SupportsDunGenPlaced) {
-        let map = target.get_placed_map_mut();
-        self.dun_gen.dun_gen_placed_map(map);
-        for portal_mut in map.portals_mut() {
-            let map = portal_mut.target_mut();
-            self.dun_gen.dun_gen_placed_map(map);
-        }
-    }
-
-    fn dun_gen_placed_map(&self, map: &mut Box<dyn PlacedRoom>) {
-        self.dun_gen.dun_gen_placed_map(map);
-        for portal_mut in map.portals_mut() {
-            let map = portal_mut.target_mut();
-            self.dun_gen.dun_gen_placed_map(map);
-        }
-    }
-}
-
-impl<TDunGen> DoesAllInstancedDunGen for TraverseThisAndPortalsGenerator<TDunGen> where
-    TDunGen: DoesAllInstancedDunGen
-{
 }

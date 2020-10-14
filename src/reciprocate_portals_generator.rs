@@ -60,34 +60,16 @@ use crate::geometry::*;
 ///     assert!(portal_count >= 2 && portal_count <= 5);
 /// }
 /// ```
-pub struct EdgePortalsGenerator<TProvidesCount>
-where
-    TProvidesCount: ProvidesCount + Sized,
-{
-    provides_count: TProvidesCount,
-    placed_room_box_func: Box<dyn Fn() -> MapId>,
-}
+pub struct ReciprocatePortalsGenerator {}
 
-impl<TProvidesCount> EdgePortalsGenerator<TProvidesCount>
-where
-    TProvidesCount: ProvidesCount + Sized,
-{
+impl ReciprocatePortalsGenerator {
     /// Creates a new generator for adding portals to a room.
-    pub fn new(
-        provides_count: TProvidesCount,
-        placed_room_box_func: Box<dyn Fn() -> MapId>,
-    ) -> Self {
-        Self {
-            provides_count,
-            placed_room_box_func,
-        }
+    pub fn new() -> Self {
+        Self {}
     }
 }
 
-impl<TProvidesCount> DoesDunGen for EdgePortalsGenerator<TProvidesCount>
-where
-    TProvidesCount: ProvidesCount + Sized,
-{
+impl DoesDunGen for ReciprocatePortalsGenerator {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
         let map_id = target.get_map_id();
         self.dun_gen_map(map_id);
@@ -96,53 +78,34 @@ where
     fn dun_gen_map(&self, map_id: MapId) {
         let maps = &MAPS.read();
         let mut map = &mut maps[map_id].write();
+
         // Convenience.
         let size = *map.size();
         if size.width() < 3 || size.height() < 3 {
             return;
         }
 
-        let count = self.provides_count.provide_count();
-        let mut rng = thread_rng();
-        for _ in 0..count {
-            let total_odds = size.height() as f64 + size.width() as f64;
-            let on_vertical_wall = rng.gen_bool(size.height() as f64 / total_odds);
-            if on_vertical_wall {
-                let portal_y = rng.gen_range(1, size.height() - 1) as i32;
-                let on_left_wall = rng.gen_bool(0.5);
-                if on_left_wall {
-                    map.add_portal(
-                        Position::new(0, portal_y),
-                        OrdinalDirection::East,
-                        Position::zero(),
-                        (self.placed_room_box_func)(),
-                    );
-                } else {
-                    map.add_portal(
-                        Position::new(size.width() as i32 - 1, portal_y),
-                        OrdinalDirection::West,
-                        Position::zero(),
-                        (self.placed_room_box_func)(),
-                    );
+        for portal_mut in map.portals_mut() {
+            let target_map_id = portal_mut.target();
+            let target_map_mut = &mut maps[map_id].write();
+            let mut found_match = false;
+            for other_portal in target_map_mut.portals() {
+                if portal_mut.local_position() == other_portal.portal_to_room_position() {
+                    found_match = true;
                 }
-            } else {
-                let portal_x = rng.gen_range(1, size.width() - 1) as i32;
-                let on_top_wall = rng.gen_bool(0.5);
-                if on_top_wall {
-                    map.add_portal(
-                        Position::new(portal_x, 0),
-                        OrdinalDirection::South,
-                        Position::zero(),
-                        (self.placed_room_box_func)(),
-                    );
-                } else {
-                    map.add_portal(
-                        Position::new(portal_x, size.height() as i32 - 1),
-                        OrdinalDirection::North,
-                        Position::zero(),
-                        (self.placed_room_box_func)(),
-                    );
-                }
+            }
+
+            if !found_match {
+                let target_map_size = *target_map_mut.size();
+                let portal_x = thread_rng().gen_range(1, target_map_size.width() - 1) as i32;
+                let target_local_position = Position::new(portal_x, 0);
+                target_map_mut.add_portal(
+                    target_local_position,
+                    OrdinalDirection::South,
+                    *portal_mut.local_position(),
+                    portal_mut.target(),
+                );
+                *portal_mut.portal_to_room_position_mut() = target_local_position;
             }
         }
     }
