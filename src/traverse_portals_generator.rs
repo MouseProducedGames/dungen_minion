@@ -7,18 +7,18 @@ use super::*;
 
 /// Used to execute a dungeon generator by traversing portals.
 ///
-/// The following chain will generate a room with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then add 5 randomly-placed hallways projecting off of it.
+/// The following chain will generate a map with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then add 5 randomly-placed hallways projecting off of it.
 ///```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
 /// let map_id =
-///     DunGen::new(MapSparse::new())
+///     DunGen::new(SparseMap::new())
 ///     .gen_with(EmptyRoomGenerator::new(Size::new(12, 8)))
 ///     .gen_with(EmptyRoomGenerator::new(Size::new(12, 8)))
 ///     .gen_with(EdgePortalsGenerator::new(
 ///         5,
 ///         Box::new(|| {
-///             MapSparse::new()
+///             SparseMap::new()
 ///         }),
 ///     ))
 ///     .gen_with(TraversePortalsGenerator::new(EmptyRoomGenerator::new(Size::new(3, 10))))

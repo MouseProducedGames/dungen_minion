@@ -12,12 +12,12 @@ use crate::geometry::*;
 ///
 /// The tiles will be generated as a rectangle defined by the `ShapeArea` .
 ///
-/// Will generate a walled area inside an empty room with a 'Size' 12 tiles wide, and 8 tiles high; its internal area will consist of `TileType::Wall` and be 6 tiles wide, and 4 tiles high, with the remainder being 'TileType::Floor'.
+/// Will generate a walled area inside an empty map with a 'Size' 12 tiles wide, and 8 tiles high; its internal area will consist of `TileType::Wall` and be 6 tiles wide, and 4 tiles high, with the remainder being 'TileType::Floor'.
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
 /// let map_id =
-///     DunGen::new(MapSparse::new())
+///     DunGen::new(SparseMap::new())
 ///     .gen_with(FillTilesGenerator::new(Size::new(12, 8), TileType::Floor))
 ///     .gen_with(FillTilesGenerator::new(
 ///         Area::new(Position::new(3, 2), Size::new(6, 4)),
@@ -71,7 +71,7 @@ impl<TProvidesArea> FillTilesGenerator<TProvidesArea>
 where
     TProvidesArea: ProvidesArea + Sized,
 {
-    /// Creates a new generator for filling an area of the room with the specified `TileType`.
+    /// Creates a new generator for filling an area of the map with the specified `TileType`.
     pub fn new(provides_area: TProvidesArea, tile_type_fill: TileType) -> Self {
         Self {
             provides_area,

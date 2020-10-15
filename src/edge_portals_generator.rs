@@ -11,9 +11,9 @@ use crate::geometry::*;
 ///
 /// The `EdgePortalsGenerator` can be called with an explicit count to add one or more internal `Portal` and [`TileType`](enum.TileType.html)::Portal instances, or with an instance of [`ProvidesCount`](geometry/trait.ProvidesCount.html).
 ///
-/// The portals will be generated randomly on the edge of the room, excluding corners, and are one-way only.
+/// The portals will be generated randomly on the edge of the map, excluding corners, and are one-way only.
 ///
-/// Will create a room with a `Size` of 8 tiles wide by 6 tiles high, and then generate 5 `Portal` and `TileType::Portal` instances projecting off of it. Each matching `Portal` and `TileType::Portal` instance will be on the same [`LocalPosition`](geometry/struct.LocalPosition.html). Each `Portal` will have an attached Box<dyn [`PlacedRoom`](trait.PlacedRoom.html)> which can be edited by calling the appropriate methods with various generators, or manually after generation.
+/// Will create a map with a `Size` of 8 tiles wide by 6 tiles high, and then generate 5 `Portal` and `TileType::Portal` instances projecting off of it. Each matching `Portal` and `TileType::Portal` instance will be on the same [`LocalPosition`](geometry/struct.LocalPosition.html). Each `Portal` will have an attached Box<dyn [`PlacedRoom`](trait.PlacedRoom.html)> which can be edited by calling the appropriate methods with various generators, or manually after generation.
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
@@ -23,7 +23,7 @@ use crate::geometry::*;
 ///     // This CountRange will generate a number in the range [2, 5].
 ///     let num_portals = CountRange::new(2, 5).provide_count();
 ///     let map_id =
-///         DunGen::new(MapSparse::new())
+///         DunGen::new(SparseMap::new())
 ///         .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
 ///         .gen_with(WalledRoomGenerator::new(Size::zero()))
 ///         .gen_with(EdgePortalsGenerator::new(
@@ -31,7 +31,7 @@ use crate::geometry::*;
 ///             // A boxed generator which provides the `MapId`s for the `Map`s that will be placed at
 ///             // the end of the portal.
 ///
-///             Box::new(|| MapSparse::new())
+///             Box::new(|| SparseMap::new())
 ///         ))
 ///         .build();
 ///
@@ -58,21 +58,21 @@ where
     TProvidesCount: ProvidesCount + Sized,
 {
     provides_count: TProvidesCount,
-    placed_room_box_func: Box<dyn Fn() -> MapId>,
+    placed_map_box_func: Box<dyn Fn() -> MapId>,
 }
 
 impl<TProvidesCount> EdgePortalsGenerator<TProvidesCount>
 where
     TProvidesCount: ProvidesCount + Sized,
 {
-    /// Creates a new generator for adding portals to a room.
+    /// Creates a new generator for adding portals to a map.
     pub fn new(
         provides_count: TProvidesCount,
-        placed_room_box_func: Box<dyn Fn() -> MapId>,
+        placed_map_box_func: Box<dyn Fn() -> MapId>,
     ) -> Self {
         Self {
             provides_count,
-            placed_room_box_func,
+            placed_map_box_func,
         }
     }
 }
@@ -130,11 +130,11 @@ where
 
         let data = data
             .iter()
-            .map(|(local_position, portal_to_room_facing)| {
+            .map(|(local_position, portal_to_map_facing)| {
                 (
                     local_position,
-                    portal_to_room_facing,
-                    (self.placed_room_box_func)(),
+                    portal_to_map_facing,
+                    (self.placed_map_box_func)(),
                 )
             })
             .collect::<Vec<_>>();

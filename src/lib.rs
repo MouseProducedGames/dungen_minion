@@ -11,14 +11,14 @@
 //! use dungen_minion::geometry::*;
 //! use dungen_minion::*;
 //! // Create a dungeon generator using RoomHashMap.
-//! // MapSparse is expandable, and has no explicit size restrictions.
-//! let map_id = DunGen::new(MapSparse::new())
-//!     // Expand the room to a width of 40, and a height of 30.
+//! // SparseMap is expandable, and has no explicit size restrictions.
+//! let map_id = DunGen::new(SparseMap::new())
+//!     // Expand the map to a width of 40, and a height of 30.
 //!     .gen_with(EmptyRoomGenerator::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
 //!     // TileType::Floor will be placed.
-//!     // You may also give it a SizeRange to generate a randomly-sized room.
+//!     // You may also give it a SizeRange to generate a randomly-sized map.
 //!     // .gen_with(EmptyRoomGenerator::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
-//!     // Create walls for the room.
+//!     // Create walls for the map.
 //!     .gen_with(WalledRoomGenerator::new(Size::zero()))
 //!     .build();
 //!

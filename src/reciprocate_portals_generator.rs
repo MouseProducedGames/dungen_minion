@@ -7,13 +7,13 @@ use rand::{thread_rng, Rng};
 use super::*;
 use crate::geometry::*;
 
-/// A generator for adding one or more instances of [`Portal`](struct.Portal.html) to a room.
+/// A generator for adding one or more instances of [`Portal`](struct.Portal.html) to a map.
 ///
 /// The `EdgePortalsGenerator` **cannot** be called statically, but can be called with an explicit count to add one or more internal `Portal` and [`TileType`](enum.TileType.html)::Portal instances.
 ///
-/// The portals will be generated randomly on the edge of the room, excluding corners, and are one-way only.
+/// The portals will be generated randomly on the edge of the map, excluding corners, and are one-way only.
 ///
-/// Will create a room with a `Size` of 8 tiles wide by 6 tiles high, and then generate 5 `Portal` and `TileType::Portal` instances projecting off of it. Each matching `Portal` and `TileType::Portal` instance will be on the same [`LocalPosition`](geometry/struct.LocalPosition.html). Each `Portal` will have an attached Box<dyn [`PlacedRoom`](trait.PlacedRoom.html)> which can be edited by calling the appropriate methods with various generators, or manually after generation.
+/// Will create a map with a `Size` of 8 tiles wide by 6 tiles high, and then generate 5 `Portal` and `TileType::Portal` instances projecting off of it. Each matching `Portal` and `TileType::Portal` instance will be on the same [`LocalPosition`](geometry/struct.LocalPosition.html). Each `Portal` will have an attached Box<dyn [`PlacedRoom`](trait.PlacedRoom.html)> which can be edited by calling the appropriate methods with various generators, or manually after generation.
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
@@ -23,14 +23,14 @@ use crate::geometry::*;
 ///     // This CountRange will generate a number in the range [2, 5].
 ///     let num_portals = CountRange::new(2, 5).provide_count();
 ///     let map_id =
-///         DunGen::new(MapSparse::new())
+///         DunGen::new(SparseMap::new())
 ///         .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
 ///         .gen_with(WalledRoomGenerator::new(Size::zero()))
 ///         .gen_with(EdgePortalsGenerator::new(
 ///             num_portals,
 ///             // A boxed generator which provides the boxed `PlacedRoom`s that will be placed at
 ///             // the end of the portal.
-///             Box::new(|| MapSparse::new()
+///             Box::new(|| SparseMap::new()
 ///         )))
 ///         .build();
 ///
@@ -55,7 +55,7 @@ use crate::geometry::*;
 pub struct ReciprocatePortalsGenerator {}
 
 impl ReciprocatePortalsGenerator {
-    /// Creates a new generator for adding portals to a room.
+    /// Creates a new generator for adding portals to a map.
     pub fn new() -> Self {
         Self {}
     }
@@ -82,7 +82,7 @@ impl DoesDunGen for ReciprocatePortalsGenerator {
             let target_map_mut = &mut maps[target_map_id].write();
             let mut found_match = false;
             for other_portal in target_map_mut.portals() {
-                if portal_mut.local_position() == other_portal.portal_to_room_position() {
+                if portal_mut.local_position() == other_portal.portal_to_map_position() {
                     found_match = true;
                 }
             }
@@ -97,7 +97,7 @@ impl DoesDunGen for ReciprocatePortalsGenerator {
                     *portal_mut.local_position(),
                     portal_mut.target(),
                 );
-                *portal_mut.portal_to_room_position_mut() = target_local_position;
+                *portal_mut.portal_to_map_position_mut() = target_local_position;
             }
         }
     }

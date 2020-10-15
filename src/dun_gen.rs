@@ -17,8 +17,8 @@ impl DunGen {
     /// # use dungen_minion::geometry::*;
     /// # use dungen_minion::*;
     /// let map_id =
-    ///     // The new DunGen generator is created, and given a primary room.
-    ///     DunGen::new(MapSparse::new())
+    ///     // The new DunGen generator is created, and given a primary map.
+    ///     DunGen::new(SparseMap::new())
     ///     // Call generation methods, giving them appropriate generators.
     ///     .build();
     ///```
@@ -33,10 +33,10 @@ impl DunGen {
     /// # use dungen_minion::geometry::*;
     /// # use dungen_minion::*;
     /// let map_id =
-    ///     DunGen::new(MapSparse::new())
+    ///     DunGen::new(SparseMap::new())
     ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
     ///     .gen_with(WalledRoomGenerator::new(Size::zero()))
-    ///     // At this point, the generator will return a walled room 8 tiles wide by 6 tiles high.
+    ///     // At this point, the generator will return a walled map 8 tiles wide by 6 tiles high.
     ///     .build();
     ///
     /// let maps = MAPS.read();
@@ -49,14 +49,14 @@ impl DunGen {
 
     /// The `DunGenPlaced` will apply the provided `TDoesDunGen` to its primary map.
     ///
-    /// The following chain will generate a room with a [`Size`](geometry/struct.Size.html) of 8 tiles wide by 6 tiles high, with no remainder.
+    /// The following chain will generate a map with a [`Size`](geometry/struct.Size.html) of 8 tiles wide by 6 tiles high, with no remainder.
     ///```
     /// # use dungen_minion::geometry::*;
     /// # use dungen_minion::*;
     /// let map_id =
-    ///     DunGen::new(MapSparse::new())
+    ///     DunGen::new(SparseMap::new())
     ///     // EmptyRoomGenerator is called as an instance, as it needs information about how large a
-    ///     // room to generate.
+    ///     // map to generate.
     ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
     ///     .build();
     ///

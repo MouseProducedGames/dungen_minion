@@ -9,19 +9,19 @@ use super::*;
 
 /// Use to limit generation calls to once per map.
 ///
-/// The following chain will generate a room with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then add 1 randomly-placed room and 4 randomly-placed hallways projecting off of it.
+/// The following chain will generate a map with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then add 1 randomly-placed map and 4 randomly-placed hallways projecting off of it.
 ///```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
 /// let map_id =
-///     DunGen::new(MapSparse::new())
+///     DunGen::new(SparseMap::new())
 ///     .gen_with(SequentialGenerator::new(&[
 ///         &EmptyRoomGenerator::new(Size::new(12, 8)),
 ///         &WalledRoomGenerator::new(Size::zero()),
 ///         &EdgePortalsGenerator::new(
 ///             1,
 ///             Box::new(|| {
-///                 MapSparse::new()
+///                 SparseMap::new()
 ///             }),
 ///         )
 ///     ]))
@@ -33,7 +33,7 @@ use super::*;
 ///         EdgePortalsGenerator::new(
 ///             4,
 ///             Box::new(|| {
-///                 MapSparse::new()
+///                 SparseMap::new()
 ///             }),
 ///     ))
 ///     // The if-check ensures that we only generate on maps that haven't already been generated.
@@ -54,7 +54,7 @@ use super::*;
 /// assert!(map.portal_count() == 5);
 /// let mut count = 0;
 /// for (i, portal) in map.portals().into_iter().enumerate() {
-///     // The first room we generated has a size of 8 tiles wide by 6 tiles high.
+///     // The first map we generated has a size of 8 tiles wide by 6 tiles high.
 ///     let target_map = maps[portal.target()].read();
 ///     if i == 0 {
 ///         assert!(*target_map.size() == Size::new(8, 6));

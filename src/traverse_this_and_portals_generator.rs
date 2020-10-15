@@ -7,18 +7,18 @@ use super::*;
 
 /// Used to execute a dungeon generator sequentially on both the current map, and through its portals.
 ///
-/// The following chain will generate a room with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then add 5 randomly-placed hallways projecting off of it.
+/// The following chain will generate a map with a [`Size`](geometry/struct.Size.html) of 12 tiles wide by 8 tiles high (including walls), and then add 5 randomly-placed hallways projecting off of it.
 ///```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
 /// let map_id =
-///     DunGen::new(MapSparse::new())
+///     DunGen::new(SparseMap::new())
 ///     .gen_with(SequentialGenerator::new(&[
 ///         &EmptyRoomGenerator::new(Size::new(12, 8)),
 ///         &EdgePortalsGenerator::new(
 ///             5,
 ///             Box::new(|| {
-///                 MapSparse::new()
+///                 SparseMap::new()
 ///             }),
 ///         ),
 ///     ]))

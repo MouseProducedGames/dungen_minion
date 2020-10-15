@@ -8,16 +8,16 @@ use crate::geometry::*;
 
 /// A generator for creating an area of [`TileType`](enum.TileType.html)::Floor.
 ///
-/// The `EmptyRoomGenerator` can be called statically to generate `TileType::Floor` across the entire area of the room, or with an explicit area to add internal `TileType::Floor`.
+/// The `EmptyRoomGenerator` can be called statically to generate `TileType::Floor` across the entire area of the map, or with an explicit area to add internal `TileType::Floor`.
 ///
 /// The floors will be generated as a rectangle defined by an [`Area`](geometry/struct.Area.html).
 ///
-/// Will generate an empty room with a 'Size' 8 tiles wide, and 6 tiles high; its internal area will consist of `TileType::Floor` and be 8 tiles wide, and 6 tiles high, with no remainder.
+/// Will generate an empty map with a 'Size' 8 tiles wide, and 6 tiles high; its internal area will consist of `TileType::Floor` and be 8 tiles wide, and 6 tiles high, with no remainder.
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
 /// let map_id =
-///     DunGen::new(MapSparse::new())
+///     DunGen::new(SparseMap::new())
 ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
 ///     .build();
 ///
@@ -55,7 +55,7 @@ impl<TProvidesArea> EmptyRoomGenerator<TProvidesArea>
 where
     TProvidesArea: ProvidesArea + Sized,
 {
-    /// Creates a new generator for adding flooring to a room.
+    /// Creates a new generator for adding flooring to a map.
     pub fn new(provides_area: TProvidesArea) -> Self {
         Self {
             forward_to: FillTilesGenerator::new(provides_area, TileType::Floor),

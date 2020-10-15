@@ -6,18 +6,18 @@
 use super::*;
 use crate::geometry::*;
 
-/// A generator for walling in a room.
+/// A generator for walling in a map.
 ///
-/// The `WalledRoomGenerator` can be called statically to generate [`TileType`](enum.TileType.html)::Wall around the perimeter of the room, or with an explicit size to add internal `TileType::Wall`.
+/// The `WalledRoomGenerator` can be called statically to generate [`TileType`](enum.TileType.html)::Wall around the perimeter of the map, or with an explicit size to add internal `TileType::Wall`.
 ///
 /// The walls will be generated as a rectangle defined by an [`Area`](geometry/struct.Area.html) starting from the [0, 0] [`LocalPosition`](geometry/struct.LocalPosition.html).
 ///
-/// Will generate a walled room 8 tiles wide, and 6 tiles high; its internal area will consist of `TileType::Floor` and be 6 tiles wide, and 4 tiles high, with the remainder being walls.
+/// Will generate a walled map 8 tiles wide, and 6 tiles high; its internal area will consist of `TileType::Floor` and be 6 tiles wide, and 4 tiles high, with the remainder being walls.
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
 /// let map_id =
-///     DunGen::new(MapSparse::new())
+///     DunGen::new(SparseMap::new())
 ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
 ///     .gen_with(WalledRoomGenerator::new(Size::zero()))
 ///     .build();
@@ -84,7 +84,7 @@ impl<TProvidesArea> WalledRoomGenerator<TProvidesArea>
 where
     TProvidesArea: ProvidesArea + Sized,
 {
-    /// Creates a new generator for walling in a room.
+    /// Creates a new generator for walling in a map.
     pub fn new(provides_area: TProvidesArea) -> Self {
         Self { provides_area }
     }
