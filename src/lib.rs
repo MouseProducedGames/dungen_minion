@@ -60,7 +60,6 @@ mod reciprocate_portals_generator;
 mod sequential_generator;
 mod traverse_portals_generator;
 mod traverse_this_and_portals_generator;
-mod visit_map_once_generator;
 mod walled_room_generator;
 
 pub use dun_gen::DunGen;
@@ -72,7 +71,6 @@ pub use reciprocate_portals_generator::ReciprocatePortalsGenerator;
 pub use sequential_generator::SequentialGenerator;
 pub use traverse_portals_generator::TraversePortalsGenerator;
 pub use traverse_this_and_portals_generator::TraverseThisAndPortalsGenerator;
-pub use visit_map_once_generator::VisitMapOnceGenerator;
 pub use walled_room_generator::WalledRoomGenerator;
 
 #[cfg(test)]
