@@ -73,24 +73,39 @@ use crate::geometry::*;
 /// }
 /// assert!(count == 0);
 /// ```
-pub struct WalledRoomGenerator<TProvidesArea>
+pub struct WalledRoomGenerator<'a, TProvidesArea>
 where
     TProvidesArea: ProvidesArea + Sized,
 {
     provides_area: TProvidesArea,
+    dont_replace: &'a [Option<&'a TileType>],
 }
 
-impl<TProvidesArea> WalledRoomGenerator<TProvidesArea>
+impl<'a, TProvidesArea> WalledRoomGenerator<'a, TProvidesArea>
 where
     TProvidesArea: ProvidesArea + Sized,
 {
-    /// Creates a new generator for walling in a map.
+    /// Creates a new generator for walling in a map. By default, will not replace `TileType::Portal`s.
     pub fn new(provides_area: TProvidesArea) -> Self {
-        Self { provides_area }
+        Self {
+            provides_area,
+            dont_replace: &[Some(&TileType::Portal)],
+        }
+    }
+
+    /// Creates a new generator for walling in a map, with a specific filter of `Option<TileType>` options that won't be replaced.
+    pub fn with_filter(
+        provides_area: TProvidesArea,
+        dont_replace: &'a [Option<&TileType>],
+    ) -> Self {
+        Self {
+            provides_area,
+            dont_replace,
+        }
     }
 }
 
-impl<TProvidesArea> DoesDunGen for WalledRoomGenerator<TProvidesArea>
+impl<'a, TProvidesArea> DoesDunGen for WalledRoomGenerator<'a, TProvidesArea>
 where
     TProvidesArea: ProvidesArea + Sized,
 {
@@ -115,14 +130,32 @@ where
         }
 
         for x in area.position().x()..=area.right() {
-            map.tile_type_at_local_set(Position::new(x, 0), TileType::Wall);
+            let position = Position::new(x, 0);
+            if !self
+                .dont_replace
+                .contains(&map.tile_type_at_local(position))
+            {
+                map.tile_type_at_local_set(position, TileType::Wall);
+            }
         }
         for y in area.position().y()..=area.bottom() {
-            map.tile_type_at_local_set(Position::new(0, y), TileType::Wall);
-            map.tile_type_at_local_set(Position::new(area.right(), y), TileType::Wall);
+            let left = Position::new(0, y);
+            if !self.dont_replace.contains(&map.tile_type_at_local(left)) {
+                map.tile_type_at_local_set(left, TileType::Wall);
+            }
+            let right = Position::new(area.right(), y);
+            if !self.dont_replace.contains(&map.tile_type_at_local(right)) {
+                map.tile_type_at_local_set(right, TileType::Wall);
+            }
         }
         for x in area.position().x()..=area.right() {
-            map.tile_type_at_local_set(Position::new(x, area.bottom()), TileType::Wall);
+            let position = Position::new(x, area.bottom());
+            if !self
+                .dont_replace
+                .contains(&map.tile_type_at_local(position))
+            {
+                map.tile_type_at_local_set(position, TileType::Wall);
+            }
         }
     }
 }
