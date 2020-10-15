@@ -7,13 +7,13 @@ use rand::{thread_rng, Rng};
 use super::*;
 use crate::geometry::*;
 
-/// A generator for adding one or more instances of [`Portal`](struct.Portal.html) to a map.
+/// A generator for iterating through the [`Portal`](struct.Portal.html)s on a [`Map`](trait.Map.html), and creating one or more linking `Portal`s on the target map, if they do not exist.
 ///
-/// The `EdgePortalsGenerator` can be called with an explicit count to add one or more internal `Portal` and [`TileType`](enum.TileType.html)::Portal instances.
+/// The `ReciprocatePortalsGenerator` does not take input in its [`ReciprocatePortalsGenerator::new()`](#method.new) method.
 ///
 /// The portals will be generated randomly on the edge of the map, excluding corners, and are one-way only.
 ///
-/// Will create a map with a `Size` of 8 tiles wide by 6 tiles high, and then generate 5 `Portal` and `TileType::Portal` instances projecting off of it. Each matching `Portal` and `TileType::Portal` instance will be on the same [`LocalPosition`](geometry/struct.LocalPosition.html). Each `Portal` will have an attached Box<dyn [`PlacedRoom`](trait.PlacedRoom.html)> which can be edited by calling the appropriate methods with various generators, or manually after generation.
+/// Will create a map with a `Size` of 12 tiles wide by 8 tiles high, and then generate 5 `Portal` and `TileType::Portal` instances projecting off of it. The `Map`s at the ends of the `Portal`s will be expanded to 8 tiles wide by 6 tiles high, and matching portals back to the main room will be generated.
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;

@@ -5,7 +5,7 @@
 // Internal includes.
 use super::*;
 
-/// A new dungeon generator for generating dungeons based on a starting [`Room`](trait.Room.html).
+/// A new dungeon generator for generating dungeons based on a starting [`Map`](trait.Map.html).
 pub struct DunGen {
     map_id: MapId,
 }

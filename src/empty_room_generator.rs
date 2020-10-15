@@ -8,9 +8,9 @@ use crate::geometry::*;
 
 /// A generator for creating an area of [`TileType`](enum.TileType.html)::Floor.
 ///
-/// The `EmptyRoomGenerator` can be called statically to generate `TileType::Floor` across the entire area of the map, or with an explicit area to add internal `TileType::Floor`.
+/// The `EmptyRoomGenerator` can be called with a `Size` of (0, 0) to generate `TileType::Floor` across the entire area of the map, or with an explicit area to add internal `TileType::Floor`.
 ///
-/// The floors will be generated as a rectangle defined by an [`Area`](geometry/struct.Area.html).
+/// The floors will be generated as a rectangle defined by an [`Area`](geometry/struct.Area.html), or by a type implementing [`ProvidesArea`](geometry/trait.ProvidesArea.hmtl).
 ///
 /// Will generate an empty map with a 'Size' 8 tiles wide, and 6 tiles high; its internal area will consist of `TileType::Floor` and be 8 tiles wide, and 6 tiles high, with no remainder.
 /// ```

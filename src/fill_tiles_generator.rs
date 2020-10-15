@@ -8,9 +8,9 @@ use crate::geometry::*;
 
 /// A generator for filling an area with a [`TileType`](enum.TileType.html).
 ///
-/// `FillTilesGenerator` can be called as an instance with an explicit `TileType` and [`Area`](geometry/struct.Area.html) to add that `TileType` to the given `ShapeArea`.
+/// `FillTilesGenerator` can be called with a `Size` of (0, 0) to generate `TileType::Floor` across the entire area of the map, or with an explicit area to add internal `TileType::Floor`.
 ///
-/// The tiles will be generated as a rectangle defined by the `ShapeArea` .
+/// The tiles will be generated as a rectangle defined by an [`Area`](geometry/struct.Area.html), or by a type implementing [`ProvidesArea`](geometry/trait.ProvidesArea.hmtl).
 ///
 /// Will generate a walled area inside an empty map with a 'Size' 12 tiles wide, and 8 tiles high; its internal area will consist of `TileType::Wall` and be 6 tiles wide, and 4 tiles high, with the remainder being 'TileType::Floor'.
 /// ```
