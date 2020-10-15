@@ -101,6 +101,11 @@ impl DoesDunGen for ReciprocatePortalsGenerator {
         for portal_mut in map.portals_mut() {
             let target_map_id = portal_mut.target();
             let target_map_mut = &mut maps[target_map_id].write();
+            let target_map_size = *target_map_mut.size();
+            if target_map_size.width() < 3 || target_map_size.height() < 3 {
+                return;
+            }
+
             let mut found_match = false;
             for other_portal in target_map_mut.portals() {
                 if portal_mut.local_position() == other_portal.portal_to_map_position() {
@@ -109,9 +114,24 @@ impl DoesDunGen for ReciprocatePortalsGenerator {
             }
 
             if !found_match {
-                let target_map_size = *target_map_mut.size();
-                let portal_x = thread_rng().gen_range(1, target_map_size.width() - 1) as i32;
-                let target_local_position = Position::new(portal_x, 0);
+                let mut rng = thread_rng();
+                let (portal_x, portal_y) = match portal_mut.portal_to_map_facing() {
+                    OrdinalDirection::North => {
+                        (rng.gen_range(1, target_map_size.width() - 1) as i32, 0)
+                    }
+                    OrdinalDirection::East => (
+                        target_map_size.width() as i32 - 1,
+                        rng.gen_range(1, target_map_size.height() - 1) as i32,
+                    ),
+                    OrdinalDirection::South => (
+                        rng.gen_range(1, target_map_size.width() - 1) as i32,
+                        target_map_size.height() as i32 - 1,
+                    ),
+                    OrdinalDirection::West => {
+                        (0, rng.gen_range(1, target_map_size.height() - 1) as i32)
+                    }
+                };
+                let target_local_position = Position::new(portal_x, portal_y);
                 target_map_mut.add_portal(
                     target_local_position,
                     OrdinalDirection::South,
