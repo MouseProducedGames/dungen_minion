@@ -76,6 +76,7 @@ pub struct ReciprocatePortalsGenerator {}
 
 impl ReciprocatePortalsGenerator {
     /// Creates a new generator for adding portals to a map.
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {}
     }
