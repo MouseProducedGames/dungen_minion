@@ -1,6 +1,8 @@
 // External includes.
 
 // Standard includes.
+use std::collections::HashSet;
+use std::sync::RwLock;
 
 // Internal includes.
 use super::*;
@@ -45,6 +47,7 @@ where
     TDunGen: DoesDunGen,
 {
     dun_gen: TDunGen,
+    visited_maps: RwLock<HashSet<MapId>>,
 }
 
 impl<TDunGen> TraversePortalsGenerator<TDunGen>
@@ -53,7 +56,10 @@ where
 {
     /// Creates a dungeon generator that traverses portals.
     pub fn new(dun_gen: TDunGen) -> Self {
-        Self { dun_gen }
+        Self {
+            dun_gen,
+            visited_maps: RwLock::new(HashSet::new()),
+        }
     }
 }
 
@@ -62,10 +68,20 @@ where
     TDunGen: DoesDunGen,
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
+        let map_id = target.get_map_id();
+        {
+            let mut visited_maps = self.visited_maps.write().unwrap();
+            if visited_maps.contains(&map_id) {
+                return;
+            }
+
+            visited_maps.insert(map_id);
+        }
+
         let mut target_map_ids = Vec::new();
         {
-            let maps = &MAPS.read()[target.get_map_id()];
-            let map = &maps.read();
+            let maps = &MAPS.read();
+            let map = &maps[map_id].read();
             for portal in map.portals() {
                 let target_map_id = portal.target();
                 target_map_ids.push(target_map_id);
@@ -79,6 +95,15 @@ where
     }
 
     fn dun_gen_map(&self, map_id: MapId) {
+        {
+            let mut visited_maps = self.visited_maps.write().unwrap();
+            if visited_maps.contains(&map_id) {
+                return;
+            }
+
+            visited_maps.insert(map_id);
+        }
+
         let mut target_map_ids = Vec::new();
         {
             let maps = &MAPS.read()[map_id];
