@@ -44,7 +44,7 @@ impl DunGen {
     /// assert!(*map.size() == Size::new(8, 6));
     ///```
     pub fn build(&mut self) -> MapId {
-        self.map_id.clone()
+        self.map_id
     }
 
     /// The `DunGenPlaced` will apply the provided `TDoesDunGen` to its primary map.
