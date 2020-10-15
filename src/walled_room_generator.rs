@@ -10,31 +10,50 @@ use crate::geometry::*;
 ///
 /// The `WalledRoomGenerator` can be called statically to generate [`TileType`](enum.TileType.html)::Wall around the perimeter of the room, or with an explicit size to add internal `TileType::Wall`.
 ///
-/// The walls will be generated as a rectangle defined by a [`Size`](geometry/struct.Size.html) starting from the [0, 0] [`LocalPosition`](geometry/struct.LocalPosition.html).
+/// The walls will be generated as a rectangle defined by an [`Area`](geometry/struct.Area.html) starting from the [0, 0] [`LocalPosition`](geometry/struct.LocalPosition.html).
 ///
 /// Will generate a walled room 8 tiles wide, and 6 tiles high; its internal area will consist of `TileType::Floor` and be 6 tiles wide, and 4 tiles high, with the remainder being walls.
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
-/// let map =
-///     DunGen::new(Box::new(RoomHashMap::new()))
+/// let map_id =
+///     DunGen::new(MapSparse::new())
 ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
-///     .gen::<WalledRoomGenerator::<Size>>()
+///     .gen_with(WalledRoomGenerator::new(Size::zero()))
 ///     .build();
+///
+/// let maps = MAPS.read();
+/// let map = maps[map_id].read();
 ///
 /// assert!(*map.size() == Size::new(8, 6));
 /// let mut floor_tile_count = 0;
 /// let mut wall_tile_count = 0;
 /// for y in 0..map.size().height() {
 ///     for x in 0..map.size().width() {
-///         let shape_position = ShapePosition::new(x as i32, y as i32);
+///         let local_position = Position::new(x as i32, y as i32);
 ///         if (x == 0 || y == 0 ||
 ///             x == (map.size().width() - 1) || y == (map.size().height() - 1)) {
-///             assert!(map.tile_type_at_local(shape_position) == Some(&TileType::Wall));
+///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Wall));
 ///             wall_tile_count += 1;
 ///         } else {
-///             assert!(map.tile_type_at_local(shape_position) == Some(&TileType::Floor));
+///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Floor));
 ///             floor_tile_count += 1;
+///         }
+///     }    
+/// }
+/// let mut floor_tile_count = 0;
+/// let mut wall_tile_count = 0;
+/// let mut tile_count = 0;
+/// for y in 0..map.size().height() {
+///     for x in 0..map.size().width() {
+///         let local_position = Position::new(x as i32, y as i32);
+///         if (x <= 0 || y <= 0 ||
+///             x >= (map.size().width() - 1) || y >= (map.size().height() - 1)) {
+///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Wall));
+///             floor_tile_count += 1;
+///         } else {
+///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Floor));
+///             wall_tile_count += 1;
 ///         }
 ///     }    
 /// }
@@ -45,8 +64,6 @@ use crate::geometry::*;
 /// // graph).
 /// assert!(wall_tile_count == ((8 * 2) + ((6 * 2) - 4)));
 ///
-/// assert!(map.tile_type_at_local(ShapePosition::new(0, 0)) == Some(&TileType::Wall));
-/// assert!(map.tile_type_at_local(ShapePosition::new(1, 1)) == Some(&TileType::Floor));
 /// assert!(map.portal_count() == 0);
 /// let mut count = 0;
 /// for portal in map.portals() {

@@ -22,38 +22,30 @@ use crate::geometry::*;
 ///     // test that we have the right number of portals.
 ///     // This CountRange will generate a number in the range [2, 5].
 ///     let num_portals = CountRange::new(2, 5).provide_count();
-///     let map =
-///         DunGen::new(Box::new(RoomHashMap::new()))
+///     let map_id =
+///         DunGen::new(MapSparse::new())
 ///         .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
-///         .gen::<WalledRoomGenerator::<Size>>()
+///         .gen_with(WalledRoomGenerator::new(Size::zero()))
 ///         .gen_with(EdgePortalsGenerator::new(
 ///             num_portals,
 ///             // A boxed generator which provides the boxed `PlacedRoom`s that will be placed at
 ///             // the end of the portal.
-///
-///             Box::new(|| {
-///                 Box::new(PlacedRoomWrapper::new(
-///                     Position::new(0, 0),
-///                     RoomHashMap::default(),
-///                 ))
-///             })
-///         ))
+///             Box::new(|| MapSparse::new()
+///         )))
 ///         .build();
+///
+///     let maps = MAPS.read();
+///     let map = maps[map_id].read();
 ///
 ///     assert!(*map.size() == Size::new(8, 6));
 ///     assert!(map.portal_count() == num_portals);
 ///     assert!(map.portal_count() >= 2 && map.portal_count() <= 5);
 ///     let mut portal_count = 0;
 ///     for portal in map.portals() {
-///         assert!(*portal.target().size() == Size::zero());
-///         assert!(
-///             portal.target().tile_type_at_local(
-///                 ShapePosition::new(0, 0)
-///             ) == None);
-///         assert!(
-///             portal.target().tile_type_at_local(
-///                 ShapePosition::new(1, 1)
-///             ) == None);
+///         let target_map = maps[portal.target()].read();
+///         assert!(*target_map.size() == Size::zero());
+///         assert!(target_map.tile_type_at_local(Position::new(0, 0)) == None);
+///         assert!(target_map.tile_type_at_local(Position::new(1, 1)) == None);
 ///         portal_count += 1;
 ///     }
 ///     assert!(portal_count == num_portals);
@@ -77,7 +69,7 @@ impl DoesDunGen for ReciprocatePortalsGenerator {
 
     fn dun_gen_map(&self, map_id: MapId) {
         let maps = &MAPS.read();
-        let mut map = &mut maps[map_id].write();
+        let map = &mut maps[map_id].write();
 
         // Convenience.
         let size = *map.size();
@@ -87,7 +79,7 @@ impl DoesDunGen for ReciprocatePortalsGenerator {
 
         for portal_mut in map.portals_mut() {
             let target_map_id = portal_mut.target();
-            let target_map_mut = &mut maps[map_id].write();
+            let target_map_mut = &mut maps[target_map_id].write();
             let mut found_match = false;
             for other_portal in target_map_mut.portals() {
                 if portal_mut.local_position() == other_portal.portal_to_room_position() {

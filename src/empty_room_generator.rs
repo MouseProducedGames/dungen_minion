@@ -8,25 +8,28 @@ use crate::geometry::*;
 
 /// A generator for creating an area of [`TileType`](enum.TileType.html)::Floor.
 ///
-/// The `EmptyRoomGenerator` can be called statically to generate `TileType::Floor` across the entire area of the room, or with an explicit size to add internal `TileType::Floor`.
+/// The `EmptyRoomGenerator` can be called statically to generate `TileType::Floor` across the entire area of the room, or with an explicit area to add internal `TileType::Floor`.
 ///
-/// The floors will be generated as a rectangle defined by a [`Size`](geometry/struct.Size.html) starting from the [0, 0] [`LocalPosition`](geometry/struct.LocalPosition.html).
+/// The floors will be generated as a rectangle defined by an [`Area`](geometry/struct.Area.html).
 ///
 /// Will generate an empty room with a 'Size' 8 tiles wide, and 6 tiles high; its internal area will consist of `TileType::Floor` and be 8 tiles wide, and 6 tiles high, with no remainder.
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
-/// let map =
-///     DunGen::new(Box::new(RoomHashMap::new()))
+/// let map_id =
+///     DunGen::new(MapSparse::new())
 ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
 ///     .build();
+///
+/// let maps = MAPS.read();
+/// let map = maps[map_id].read();
 ///
 /// assert!(*map.size() == Size::new(8, 6));
 /// let mut tile_count = 0;
 /// for y in 0..map.size().height() {
 ///     for x in 0..map.size().width() {
-///         let shape_position = ShapePosition::new(x as i32, y as i32);
-///         assert!(map.tile_type_at_local(shape_position) == Some(&TileType::Floor));
+///         let local_position = Position::new(x as i32, y as i32);
+///         assert!(map.tile_type_at_local(local_position) == Some(&TileType::Floor));
 ///         tile_count += 1;
 ///     }    
 /// }

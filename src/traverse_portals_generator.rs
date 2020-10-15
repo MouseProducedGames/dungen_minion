@@ -11,40 +11,31 @@ use super::*;
 ///```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
-/// let map =
-///     DunGen::new(Box::new(RoomHashMap::new()))
-///     .gen_with(SequentialGenerator::new(&[
-///         &EmptyRoomGenerator::new(Size::new(12, 8)),
-///         &WalledRoomGenerator::new(Size::zero()),
-///         &EdgePortalsGenerator::new(
-///             5,
-///             Box::new(|| {
-///                 Box::new(PlacedRoomWrapper::new(
-///                     Position::new(0, 0),
-///                     RoomHashMap::default(),
-///                 ))
-///             }),
-///         ),
-///     ]))
-///     .gen_with(TraversePortalsGenerator::new(SequentialGenerator::new(&[
-///         &EmptyRoomGenerator::new(Size::new(3, 10)),
-///         &WalledRoomGenerator::new(Size::zero()),
-///     ])))
+/// let map_id =
+///     DunGen::new(MapSparse::new())
+///     .gen_with(EmptyRoomGenerator::new(Size::new(12, 8)))
+///     .gen_with(EmptyRoomGenerator::new(Size::new(12, 8)))
+///     .gen_with(EdgePortalsGenerator::new(
+///         5,
+///         Box::new(|| {
+///             MapSparse::new()
+///         }),
+///     ))
+///     .gen_with(TraversePortalsGenerator::new(EmptyRoomGenerator::new(Size::new(3, 10))))
+///     .gen_with(TraversePortalsGenerator::new(WalledRoomGenerator::new(Size::zero())))
 ///     .build();
+///
+/// let maps = MAPS.read();
+/// let map = maps[map_id].read();
 ///
 /// assert!(*map.size() == Size::new(12, 8));
 /// assert!(map.portal_count() == 5);
 /// let mut count = 0;
 /// for portal in map.portals() {
-///     assert!(*portal.target().size() == Size::new(3, 10));
-///     assert!(
-///         portal.target().tile_type_at_local(
-///             ShapePosition::new(0, 0)
-///         ) == Some(&TileType::Wall));
-///     assert!(
-///         portal.target().tile_type_at_local(
-///             ShapePosition::new(1, 1)
-///         ) == Some(&TileType::Floor));
+///     let target_map = maps[portal.target()].read();
+///     assert!(*target_map.size() == Size::new(3, 10));
+///     assert!(target_map.tile_type_at_local(Position::new(0, 0)) == Some(&TileType::Wall));
+///     assert!(target_map.tile_type_at_local(Position::new(1, 1)) == Some(&TileType::Floor));
 ///     count += 1;
 /// }
 /// assert!(count == 5);
@@ -54,7 +45,6 @@ where
     TDunGen: DoesDunGen,
 {
     dun_gen: TDunGen,
-    target_map_ids: Vec<MapId>,
 }
 
 impl<TDunGen> TraversePortalsGenerator<TDunGen>
@@ -63,10 +53,7 @@ where
 {
     /// Creates a dungeon generator that traverses portals.
     pub fn new(dun_gen: TDunGen) -> Self {
-        Self {
-            dun_gen,
-            target_map_ids: Vec::new(),
-        }
+        Self { dun_gen }
     }
 }
 
@@ -80,8 +67,8 @@ where
             let maps = &MAPS.read()[target.get_map_id()];
             let map = &maps.read();
             for portal in map.portals() {
-                let map_id = portal.target();
-                target_map_ids.push(map_id);
+                let target_map_id = portal.target();
+                target_map_ids.push(target_map_id);
             }
         }
 
@@ -97,8 +84,8 @@ where
             let maps = &MAPS.read()[map_id];
             let map = &maps.read();
             for portal in map.portals() {
-                let map_id = portal.target();
-                target_map_ids.push(map_id);
+                let target_map_id = portal.target();
+                target_map_ids.push(target_map_id);
             }
         }
 

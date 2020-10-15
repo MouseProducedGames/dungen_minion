@@ -11,33 +11,33 @@
 //! use dungen_minion::geometry::*;
 //! use dungen_minion::*;
 //! // Create a dungeon generator using RoomHashMap.
-//! // RoomHashMap is expandable, and has no explicit size restrictions.
-//! let dungen = DunGen::new(Box::new(RoomHashMap::default()))
+//! // MapSparse is expandable, and has no explicit size restrictions.
+//! let map_id = DunGen::new(MapSparse::new())
 //!     // Expand the room to a width of 40, and a height of 30.
 //!     .gen_with(EmptyRoomGenerator::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
 //!     // TileType::Floor will be placed.
 //!     // You may also give it a SizeRange to generate a randomly-sized room.
 //!     // .gen_with(EmptyRoomGenerator::new(SizeRange::new(Size::new(24, 18), Size::new(40, 30))))
 //!     // Create walls for the room.
-//!     .gen::<WalledRoomGenerator::<Size>>()
+//!     .gen_with(WalledRoomGenerator::new(Size::zero()))
 //!     .build();
 //!
+//! let maps = MAPS.read();
+//! let map = maps[map_id].read();
+//!
 //! // A simple drawing routine.
-//! for y in 0..dungen.size().height() {
-//!     for x in 0..dungen.size().width() {
-//!         let tile_type = dungen.tile_type_at_local(ShapePosition::new(x as i32, y as i32));
-//!         if tile_type.is_none() {
-//!             continue;
-//!         }
+//! for y in 0..map.size().height() {
+//!     for x in 0..map.size().width() {
+//!         let tile_type = map.tile_type_at_local(Position::new(x as i32, y as i32));
 //!
 //!         // The selection of tiles is deliberately limited, for now.
 //!         // Theming is included in future plans for dungen_minion.
-//!         let tile_type = tile_type.unwrap();
 //!         let ch = match tile_type {
-//!             TileType::Void => ' ',
-//!             TileType::Floor => '.',
-//!             TileType::Wall => '#',
-//!             TileType::Portal => '+',
+//!             Some(TileType::Void) => ' ',
+//!             Some(TileType::Floor) => '.',
+//!             Some(TileType::Wall) => '#',
+//!             Some(TileType::Portal) => '+',
+//!             None => ' ',
 //!         };
 //!
 //!         print!("{}", ch);

@@ -11,14 +11,14 @@ pub struct DunGen {
 }
 
 impl DunGen {
-    /// Creates a new dungeon generator for generating dungeons based on a starting boxed `Room`.
+    /// Creates a new dungeon generator for generating dungeons based on a starting [`Map`](trait.Map.html) implementation.
     ///
     ///```
     /// # use dungen_minion::geometry::*;
     /// # use dungen_minion::*;
-    /// let map =
+    /// let map_id =
     ///     // The new DunGen generator is created, and given a primary room.
-    ///     DunGen::new(Box::new(RoomHashMap::new()))
+    ///     DunGen::new(MapSparse::new())
     ///     // Call generation methods, giving them appropriate generators.
     ///     .build();
     ///```
@@ -26,19 +26,21 @@ impl DunGen {
         Self { map_id }
     }
 
-    /// Returns a boxed clone of the generated `Room`.
+    /// Returns the `MapId` of the generated [`Map`](trait.Map.html) implementation.
     ///
-    /// After the dungeon has been generated, the `DunGen` instance can be safely discarded.
+    /// After the map has been generated, the `DunGen` instance can be safely discarded.
     ///```
     /// # use dungen_minion::geometry::*;
     /// # use dungen_minion::*;
-    /// let map =
-    ///     DunGen::new(Box::new(RoomHashMap::new()))
+    /// let map_id =
+    ///     DunGen::new(MapSparse::new())
     ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
-    ///     .gen::<WalledRoomGenerator::<Size>>()
+    ///     .gen_with(WalledRoomGenerator::new(Size::zero()))
     ///     // At this point, the generator will return a walled room 8 tiles wide by 6 tiles high.
     ///     .build();
     ///
+    /// let maps = MAPS.read();
+    /// let map = maps[map_id].read();
     /// assert!(*map.size() == Size::new(8, 6));
     ///```
     pub fn build(&mut self) -> MapId {
@@ -51,16 +53,19 @@ impl DunGen {
     ///```
     /// # use dungen_minion::geometry::*;
     /// # use dungen_minion::*;
-    /// let map =
-    ///     DunGen::new(Box::new(RoomHashMap::new()))
+    /// let map_id =
+    ///     DunGen::new(MapSparse::new())
     ///     // EmptyRoomGenerator is called as an instance, as it needs information about how large a
     ///     // room to generate.
     ///     .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
     ///     .build();
     ///
+    /// let maps = MAPS.read();
+    /// let map = maps[map_id].read();
+    ///
     /// assert!(*map.size() == Size::new(8, 6));
-    /// assert!(map.tile_type_at_local(ShapePosition::new(0, 0)) == Some(&TileType::Floor));
-    /// assert!(map.tile_type_at_local(ShapePosition::new(1, 1)) == Some(&TileType::Floor));
+    /// assert!(map.tile_type_at_local(Position::new(0, 0)) == Some(&TileType::Floor));
+    /// assert!(map.tile_type_at_local(Position::new(1, 1)) == Some(&TileType::Floor));
     /// assert!(map.portal_count() == 0);
     /// let mut count = 0;
     /// for portal in map.portals() {
@@ -70,7 +75,7 @@ impl DunGen {
     /// }
     /// assert!(count == 0);
     ///```
-    pub fn gen_with<TDoesDunGen>(&mut self, mut with: TDoesDunGen) -> &mut Self
+    pub fn gen_with<TDoesDunGen>(&mut self, with: TDoesDunGen) -> &mut Self
     where
         TDoesDunGen: DoesDunGen,
     {

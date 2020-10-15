@@ -7,9 +7,9 @@ use rand::{thread_rng, Rng};
 use super::*;
 use crate::geometry::*;
 
-/// A generator for adding one or more instances of [`Portal`](struct.Portal.html) to a room.
+/// A generator for adding one or more instances of [`Portal`](struct.Portal.html) to the edges of a map.
 ///
-/// The `EdgePortalsGenerator` **cannot** be called statically, but can be called with an explicit count to add one or more internal `Portal` and [`TileType`](enum.TileType.html)::Portal instances.
+/// The `EdgePortalsGenerator` can be called with an explicit count to add one or more internal `Portal` and [`TileType`](enum.TileType.html)::Portal instances, or with an instance of [`ProvidesCount`](geometry/trait.ProvidesCount.html).
 ///
 /// The portals will be generated randomly on the edge of the room, excluding corners, and are one-way only.
 ///
@@ -22,38 +22,31 @@ use crate::geometry::*;
 ///     // test that we have the right number of portals.
 ///     // This CountRange will generate a number in the range [2, 5].
 ///     let num_portals = CountRange::new(2, 5).provide_count();
-///     let map =
-///         DunGen::new(Box::new(RoomHashMap::new()))
+///     let map_id =
+///         DunGen::new(MapSparse::new())
 ///         .gen_with(EmptyRoomGenerator::new(Size::new(8, 6)))
-///         .gen::<WalledRoomGenerator::<Size>>()
+///         .gen_with(WalledRoomGenerator::new(Size::zero()))
 ///         .gen_with(EdgePortalsGenerator::new(
 ///             num_portals,
-///             // A boxed generator which provides the boxed `PlacedRoom`s that will be placed at
+///             // A boxed generator which provides the `MapId`s for the `Map`s that will be placed at
 ///             // the end of the portal.
 ///
-///             Box::new(|| {
-///                 Box::new(PlacedRoomWrapper::new(
-///                     Position::new(0, 0),
-///                     RoomHashMap::default(),
-///                 ))
-///             })
+///             Box::new(|| MapSparse::new())
 ///         ))
 ///         .build();
+///
+///     let maps = MAPS.read();
+///     let map = maps[map_id].read();
 ///
 ///     assert!(*map.size() == Size::new(8, 6));
 ///     assert!(map.portal_count() == num_portals);
 ///     assert!(map.portal_count() >= 2 && map.portal_count() <= 5);
 ///     let mut portal_count = 0;
 ///     for portal in map.portals() {
-///         assert!(*portal.target().size() == Size::zero());
-///         assert!(
-///             portal.target().tile_type_at_local(
-///                 ShapePosition::new(0, 0)
-///             ) == None);
-///         assert!(
-///             portal.target().tile_type_at_local(
-///                 ShapePosition::new(1, 1)
-///             ) == None);
+///         let target_map = maps[portal.target()].read();
+///         assert!(*target_map.size() == Size::zero());
+///         assert!(target_map.tile_type_at_local(Position::new(0, 0)) == None);
+///         assert!(target_map.tile_type_at_local(Position::new(1, 1)) == None);
 ///         portal_count += 1;
 ///     }
 ///     assert!(portal_count == num_portals);
@@ -94,55 +87,63 @@ where
     }
 
     fn dun_gen_map(&self, map_id: MapId) {
-        let maps = &MAPS.read();
-        let mut map = &mut maps[map_id].write();
-        // Convenience.
-        let size = *map.size();
-        if size.width() < 3 || size.height() < 3 {
-            return;
+        let mut data = Vec::<(Position, OrdinalDirection)>::new();
+        {
+            let maps = &MAPS.read();
+            let map = &mut maps[map_id].write();
+            // Convenience.
+            let area = *map.area();
+            if area.width() < 3 || area.height() < 3 {
+                return;
+            }
+
+            let count = self.provides_count.provide_count();
+            let mut rng = thread_rng();
+            for _ in 0..count {
+                let total_odds = area.height() as f64 + area.width() as f64;
+                let on_vertical_wall = rng.gen_bool(area.height() as f64 / total_odds);
+                data.push(if on_vertical_wall {
+                    let portal_y = rng.gen_range(1, area.bottom()) as i32;
+                    let on_left_wall = rng.gen_bool(0.5);
+                    if on_left_wall {
+                        (Position::new(0, portal_y), OrdinalDirection::East)
+                    } else {
+                        (
+                            Position::new(area.right(), portal_y),
+                            OrdinalDirection::West,
+                        )
+                    }
+                } else {
+                    let portal_x = rng.gen_range(1, area.width() - 1) as i32;
+                    let on_top_wall = rng.gen_bool(0.5);
+                    if on_top_wall {
+                        (Position::new(portal_x, 0), OrdinalDirection::South)
+                    } else {
+                        (
+                            Position::new(portal_x, area.bottom()),
+                            OrdinalDirection::North,
+                        )
+                    }
+                });
+            }
         }
 
-        let count = self.provides_count.provide_count();
-        let mut rng = thread_rng();
-        for _ in 0..count {
-            let total_odds = size.height() as f64 + size.width() as f64;
-            let on_vertical_wall = rng.gen_bool(size.height() as f64 / total_odds);
-            if on_vertical_wall {
-                let portal_y = rng.gen_range(1, size.height() - 1) as i32;
-                let on_left_wall = rng.gen_bool(0.5);
-                if on_left_wall {
-                    map.add_portal(
-                        Position::new(0, portal_y),
-                        OrdinalDirection::East,
-                        Position::zero(),
-                        (self.placed_room_box_func)(),
-                    );
-                } else {
-                    map.add_portal(
-                        Position::new(size.width() as i32 - 1, portal_y),
-                        OrdinalDirection::West,
-                        Position::zero(),
-                        (self.placed_room_box_func)(),
-                    );
-                }
-            } else {
-                let portal_x = rng.gen_range(1, size.width() - 1) as i32;
-                let on_top_wall = rng.gen_bool(0.5);
-                if on_top_wall {
-                    map.add_portal(
-                        Position::new(portal_x, 0),
-                        OrdinalDirection::South,
-                        Position::zero(),
-                        (self.placed_room_box_func)(),
-                    );
-                } else {
-                    map.add_portal(
-                        Position::new(portal_x, size.height() as i32 - 1),
-                        OrdinalDirection::North,
-                        Position::zero(),
-                        (self.placed_room_box_func)(),
-                    );
-                }
+        let data = data
+            .iter()
+            .map(|(local_position, portal_to_room_facing)| {
+                (
+                    local_position,
+                    portal_to_room_facing,
+                    (self.placed_room_box_func)(),
+                )
+            })
+            .collect::<Vec<_>>();
+
+        {
+            let maps = &MAPS.read();
+            let map = &mut maps[map_id].write();
+            for data in data {
+                map.add_portal(*data.0, *data.1, Position::zero(), data.2);
             }
         }
     }

@@ -8,7 +8,7 @@ use crate::geometry::*;
 
 /// A generator for filling an area with a [`TileType`](enum.TileType.html).
 ///
-/// `FillTilesGenerator` can be called as an instance with an explicit `TileType` and [`ShapeArea`](geometry/struct.ShapeArea.html) to add that `TileType` to the given `ShapeArea`.
+/// `FillTilesGenerator` can be called as an instance with an explicit `TileType` and [`Area`](geometry/struct.Area.html) to add that `TileType` to the given `ShapeArea`.
 ///
 /// The tiles will be generated as a rectangle defined by the `ShapeArea` .
 ///
@@ -16,29 +16,31 @@ use crate::geometry::*;
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
-/// let map =
-///     DunGen::new(Box::new(RoomHashMap::new()))
+/// let map_id =
+///     DunGen::new(MapSparse::new())
 ///     .gen_with(FillTilesGenerator::new(Size::new(12, 8), TileType::Floor))
 ///     .gen_with(FillTilesGenerator::new(
-///         ShapeArea::new(
-///             ShapePosition::new(3, 2),
-///             Size::new(6, 4)),
+///         Area::new(Position::new(3, 2), Size::new(6, 4)),
 ///         TileType::Wall))
 ///     .build();
 ///
+/// let maps = MAPS.read();
+/// let map = maps[map_id].read();
+///
 /// assert!(*map.size() == Size::new(12, 8));
+///
 /// let mut floor_tile_count = 0;
 /// let mut wall_tile_count = 0;
 /// let mut tile_count = 0;
 /// for y in 0..map.size().height() {
 ///     for x in 0..map.size().width() {
-///         let shape_position = ShapePosition::new(x as i32, y as i32);
+///         let local_position = Position::new(x as i32, y as i32);
 ///         if (x <= 2 || y <= 1 ||
 ///             x >= (map.size().width() - 3) || y >= (map.size().height() - 2)) {
-///             assert!(map.tile_type_at_local(shape_position) == Some(&TileType::Floor));
+///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Floor));
 ///             floor_tile_count += 1;
 ///         } else {
-///             assert!(map.tile_type_at_local(shape_position) == Some(&TileType::Wall));
+///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Wall));
 ///             wall_tile_count += 1;
 ///         }
 ///     }    
@@ -90,7 +92,7 @@ where
     fn dun_gen_map(&self, map_id: MapId) {
         let area = self.provides_area.provide_area();
         let maps = &MAPS.read();
-        let mut map = &mut maps[map_id].write();
+        let map = &mut maps[map_id].write();
         let area = if area.width() > 0 || area.height() > 0 {
             area
         } else {

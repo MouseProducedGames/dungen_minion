@@ -11,40 +11,35 @@ use super::*;
 ///```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
-/// let map =
-///     DunGen::new(Box::new(RoomHashMap::new()))
+/// let map_id =
+///     DunGen::new(MapSparse::new())
 ///     .gen_with(SequentialGenerator::new(&[
 ///         &EmptyRoomGenerator::new(Size::new(12, 8)),
 ///         &WalledRoomGenerator::new(Size::zero()),
 ///         &EdgePortalsGenerator::new(
 ///             5,
 ///             Box::new(|| {
-///                 Box::new(PlacedRoomWrapper::new(
-///                     Position::new(0, 0),
-///                     RoomHashMap::default(),
-///                 ))
+///                 MapSparse::new()
 ///             }),
 ///         )
 ///     ]))
-///     .gen_leaf_portals_with(&SequentialGenerator::new(&[
+///     .gen_with(TraversePortalsGenerator::new(SequentialGenerator::new(&[
 ///         &EmptyRoomGenerator::new(Size::new(3, 10)),
 ///         &WalledRoomGenerator::new(Size::zero()),
-///     ]))
+///     ])))
 ///     .build();
+///
+/// let maps = MAPS.read();
+/// let map = maps[map_id].read();
 ///
 /// assert!(*map.size() == Size::new(12, 8));
 /// assert!(map.portal_count() == 5);
 /// let mut count = 0;
 /// for portal in map.portals() {
-///     assert!(*portal.target().size() == Size::new(3, 10));
-///     assert!(
-///         portal.target().tile_type_at_local(
-///             ShapePosition::new(0, 0)
-///         ) == Some(&TileType::Wall));
-///     assert!(
-///         portal.target().tile_type_at_local(
-///             ShapePosition::new(1, 1)
-///         ) == Some(&TileType::Floor));
+///     let target_map = maps[portal.target()].read();
+///     assert!(*target_map.size() == Size::new(3, 10));
+///     assert!(target_map.tile_type_at_local(Position::new(0, 0)) == Some(&TileType::Wall));
+///     assert!(target_map.tile_type_at_local(Position::new(1, 1)) == Some(&TileType::Floor));
 ///     count += 1;
 /// }
 /// assert!(count == 5);
