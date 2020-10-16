@@ -37,10 +37,10 @@ use crate::geometry::*;
 ///         let local_position = Position::new(x as i32, y as i32);
 ///         if (x <= 2 || y <= 1 ||
 ///             x >= (map.size().width() - 3) || y >= (map.size().height() - 2)) {
-///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Floor));
+///             assert!(map.tile_type_at_local(local_position) == Some(TileType::Floor));
 ///             floor_tile_count += 1;
 ///         } else {
-///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Wall));
+///             assert!(map.tile_type_at_local(local_position) == Some(TileType::Wall));
 ///             wall_tile_count += 1;
 ///         }
 ///     }    
@@ -105,7 +105,6 @@ where
 
         for y in area.position().y()..=area.bottom() {
             for x in area.position().x()..=area.right() {
-                println!("{}, {}", x, y);
                 map.tile_type_at_local_set(Position::new(x, y), self.tile_type_fill);
             }
         }

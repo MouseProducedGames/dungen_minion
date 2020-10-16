@@ -59,9 +59,9 @@ use super::*;
 ///         assert!(*target_map.size() == Size::new(3, 10));
 ///     }
 ///     assert!(
-///         target_map.tile_type_at_local(Position::new(0, 0)) == Some(&TileType::Wall));
+///         target_map.tile_type_at_local(Position::new(0, 0)) == Some(TileType::Wall));
 ///     assert!(
-///         target_map.tile_type_at_local(Position::new(1, 1)) == Some(&TileType::Floor));
+///         target_map.tile_type_at_local(Position::new(1, 1)) == Some(TileType::Floor));
 ///     count += 1;
 /// }
 /// assert!(count == 5);

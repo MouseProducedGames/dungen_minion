@@ -51,8 +51,8 @@ use crate::geometry::*;
 ///     for portal in map.portals() {
 ///         let target_map = maps[portal.target()].read();
 ///         assert!(*target_map.size() == Size::new(8, 6));
-///         assert!(target_map.tile_type_at_local(Position::new(0, 0)) == Some(&TileType::Wall));
-///         assert!(target_map.tile_type_at_local(Position::new(1, 1)) == Some(&TileType::Floor));
+///         assert!(target_map.tile_type_at_local(Position::new(0, 0)) == Some(TileType::Wall));
+///         assert!(target_map.tile_type_at_local(Position::new(1, 1)) == Some(TileType::Floor));
 ///         let target_local_position = *portal.local_position();
 ///         let target_other_position = *portal.portal_to_map_position();
 ///         println!("Target map portal count: {}", target_map.portal_count());

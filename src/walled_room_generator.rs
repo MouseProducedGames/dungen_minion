@@ -33,10 +33,10 @@ use crate::geometry::*;
 ///         let local_position = Position::new(x as i32, y as i32);
 ///         if (x == 0 || y == 0 ||
 ///             x == (map.size().width() - 1) || y == (map.size().height() - 1)) {
-///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Wall));
+///             assert!(map.tile_type_at_local(local_position) == Some(TileType::Wall));
 ///             wall_tile_count += 1;
 ///         } else {
-///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Floor));
+///             assert!(map.tile_type_at_local(local_position) == Some(TileType::Floor));
 ///             floor_tile_count += 1;
 ///         }
 ///     }    
@@ -49,10 +49,10 @@ use crate::geometry::*;
 ///         let local_position = Position::new(x as i32, y as i32);
 ///         if (x <= 0 || y <= 0 ||
 ///             x >= (map.size().width() - 1) || y >= (map.size().height() - 1)) {
-///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Wall));
+///             assert!(map.tile_type_at_local(local_position) == Some(TileType::Wall));
 ///             floor_tile_count += 1;
 ///         } else {
-///             assert!(map.tile_type_at_local(local_position) == Some(&TileType::Floor));
+///             assert!(map.tile_type_at_local(local_position) == Some(TileType::Floor));
 ///             wall_tile_count += 1;
 ///         }
 ///     }    
@@ -78,7 +78,7 @@ where
     TProvidesArea: ProvidesArea + Sized,
 {
     provides_area: TProvidesArea,
-    dont_replace: &'a [Option<&'a TileType>],
+    dont_replace: &'a [Option<TileType>],
 }
 
 impl<'a, TProvidesArea> WalledRoomGenerator<'a, TProvidesArea>
@@ -89,15 +89,12 @@ where
     pub fn new(provides_area: TProvidesArea) -> Self {
         Self {
             provides_area,
-            dont_replace: &[Some(&TileType::Portal)],
+            dont_replace: &[Some(TileType::Portal)],
         }
     }
 
     /// Creates a new generator for walling in a map, with a specific filter of `Option<TileType>` options that won't be replaced.
-    pub fn with_filter(
-        provides_area: TProvidesArea,
-        dont_replace: &'a [Option<&TileType>],
-    ) -> Self {
+    pub fn with_filter(provides_area: TProvidesArea, dont_replace: &'a [Option<TileType>]) -> Self {
         Self {
             provides_area,
             dont_replace,

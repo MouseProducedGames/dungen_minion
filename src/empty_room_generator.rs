@@ -29,7 +29,7 @@ use crate::geometry::*;
 /// for y in 0..map.size().height() {
 ///     for x in 0..map.size().width() {
 ///         let local_position = Position::new(x as i32, y as i32);
-///         assert!(map.tile_type_at_local(local_position) == Some(&TileType::Floor));
+///         assert!(map.tile_type_at_local(local_position) == Some(TileType::Floor));
 ///         tile_count += 1;
 ///     }    
 /// }

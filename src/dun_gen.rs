@@ -64,8 +64,8 @@ impl DunGen {
     /// let map = maps[map_id].read();
     ///
     /// assert!(*map.size() == Size::new(8, 6));
-    /// assert!(map.tile_type_at_local(Position::new(0, 0)) == Some(&TileType::Floor));
-    /// assert!(map.tile_type_at_local(Position::new(1, 1)) == Some(&TileType::Floor));
+    /// assert!(map.tile_type_at_local(Position::new(0, 0)) == Some(TileType::Floor));
+    /// assert!(map.tile_type_at_local(Position::new(1, 1)) == Some(TileType::Floor));
     /// assert!(map.portal_count() == 0);
     /// let mut count = 0;
     /// for portal in map.portals() {
