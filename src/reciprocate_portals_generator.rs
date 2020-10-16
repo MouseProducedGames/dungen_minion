@@ -116,25 +116,25 @@ impl DoesDunGen for ReciprocatePortalsGenerator {
             if !found_match {
                 let mut rng = thread_rng();
                 let (portal_x, portal_y) = match portal_mut.portal_to_map_facing() {
-                    OrdinalDirection::North => {
+                    CardinalDirection::North => {
                         (rng.gen_range(1, target_map_size.width() - 1) as i32, 0)
                     }
-                    OrdinalDirection::East => (
+                    CardinalDirection::East => (
                         target_map_size.width() as i32 - 1,
                         rng.gen_range(1, target_map_size.height() - 1) as i32,
                     ),
-                    OrdinalDirection::South => (
+                    CardinalDirection::South => (
                         rng.gen_range(1, target_map_size.width() - 1) as i32,
                         target_map_size.height() as i32 - 1,
                     ),
-                    OrdinalDirection::West => {
+                    CardinalDirection::West => {
                         (0, rng.gen_range(1, target_map_size.height() - 1) as i32)
                     }
                 };
                 let target_local_position = Position::new(portal_x, portal_y);
                 target_map_mut.add_portal(
                     target_local_position,
-                    OrdinalDirection::South,
+                    CardinalDirection::South,
                     *portal_mut.local_position(),
                     map_id,
                 );

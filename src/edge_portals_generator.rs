@@ -87,7 +87,7 @@ where
     }
 
     fn dun_gen_map(&self, map_id: MapId) {
-        let mut data = Vec::<(Position, OrdinalDirection)>::new();
+        let mut data = Vec::<(Position, CardinalDirection)>::new();
         {
             let maps = &MAPS.read();
             let map = &mut maps[map_id].write();
@@ -106,22 +106,22 @@ where
                     let portal_y = rng.gen_range(1, area.bottom()) as i32;
                     let on_left_wall = rng.gen_bool(0.5);
                     if on_left_wall {
-                        (Position::new(0, portal_y), OrdinalDirection::East)
+                        (Position::new(0, portal_y), CardinalDirection::East)
                     } else {
                         (
                             Position::new(area.right(), portal_y),
-                            OrdinalDirection::West,
+                            CardinalDirection::West,
                         )
                     }
                 } else {
                     let portal_x = rng.gen_range(1, area.width() - 1) as i32;
                     let on_top_wall = rng.gen_bool(0.5);
                     if on_top_wall {
-                        (Position::new(portal_x, 0), OrdinalDirection::South)
+                        (Position::new(portal_x, 0), CardinalDirection::South)
                     } else {
                         (
                             Position::new(portal_x, area.bottom()),
-                            OrdinalDirection::North,
+                            CardinalDirection::North,
                         )
                     }
                 });
