@@ -1,6 +1,5 @@
 // External includes.
 use super::*;
-use crate::geometry::*;
 
 // Standard includes.
 
@@ -102,25 +101,10 @@ where
         let mut positions_map_ids = Vec::new();
         for portal in map.portals() {
             if (self.portal_filter)(portal) {
-                let direction = *portal.portal_to_map_facing();
-                let rotation = CardinalDirection::North - direction;
                 let portal_map_id = portal.target();
 
-                let portal_map_position = {
-                    let portal_map = &mut maps[portal_map_id].write();
-                    println!("{}", rotation);
-                    // portal_map.rotate(rotation);
-                    *portal.local_position()
-                        + match rotation {
-                            CardinalRotation::None => -(*portal.portal_to_map_position()),
-                            CardinalRotation::Right90 => -(*portal.portal_to_map_position()),
-                            CardinalRotation::Full180 => -(*portal.portal_to_map_position()),
-                            CardinalRotation::Left90 => -(*portal.portal_to_map_position()),
-                        }
-                };
-
-                /* *portal_mut.portal_to_map_position_mut() =
-                 *portal_mut.portal_to_map_position() * rotation; */
+                let portal_map_position =
+                    *portal.local_position() - (*portal.portal_to_map_position());
 
                 positions_map_ids.push((portal_map_position, portal_map_id));
             }
