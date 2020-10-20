@@ -2,6 +2,8 @@
 use super::*;
 
 // Standard includes.
+use std::collections::{HashSet, VecDeque};
+use std::sync::RwLock;
 
 // Internal includes.
 
@@ -34,7 +36,7 @@ use super::*;
 ///             &WalledRoomGenerator::new(Size::zero()),
 ///         ])))
 ///         .gen_with(TraverseThisAndPortalsGenerator::new(ReciprocatePortalsGenerator::new()))
-///         .gen_with(MergePortalMapsAsSubMapsGenerator::new(|portal| true))
+///         .gen_with(MergePortalMapsAsSubMapsGenerator::new(1, |portal| true))
 ///         .build();
 ///
 ///     let maps = MAPS.read();
@@ -72,6 +74,8 @@ where
     TPortalFilter: Fn(&Portal) -> bool,
 {
     portal_filter: TPortalFilter,
+    recursion_depth: usize,
+    visited: RwLock<HashSet<MapId>>,
 }
 
 impl<TPortalFilter> MergePortalMapsAsSubMapsGenerator<TPortalFilter>
@@ -79,8 +83,12 @@ where
     TPortalFilter: Fn(&Portal) -> bool,
 {
     /// Creates a new MergePortalMapsAsSubMapsGenerator.
-    pub fn new(portal_filter: TPortalFilter) -> Self {
-        Self { portal_filter }
+    pub fn new(recursion_depth: usize, portal_filter: TPortalFilter) -> Self {
+        Self {
+            portal_filter,
+            recursion_depth,
+            visited: RwLock::new(HashSet::new()),
+        }
     }
 }
 
@@ -94,23 +102,85 @@ where
     }
 
     fn dun_gen_map(&self, map_id: MapId) {
+        let mut visited = self.visited.write().unwrap();
+        if visited.contains(&map_id) {
+            return;
+        }
+        visited.insert(map_id);
+
+        if self.recursion_depth == 0 {
+            return;
+        }
+
+        let recursion_depth = self.recursion_depth;
         let maps = &MAPS.read();
         let map = &mut maps[map_id].write();
 
+        let mut on_maps = VecDeque::new();
         let mut positions_map_ids = Vec::new();
-        for portal in map.portals() {
-            if (self.portal_filter)(portal) {
-                let portal_map_id = portal.target();
+        {
+            for portal in map.portals() {
+                if (self.portal_filter)(portal) {
+                    let portal_map_id = portal.target();
 
-                let portal_map_position =
-                    *portal.local_position() - (*portal.portal_to_map_position());
+                    if visited.contains(&portal_map_id) {
+                        continue;
+                    }
+                    visited.insert(portal_map_id);
 
-                positions_map_ids.push((portal_map_position, portal_map_id));
+                    let portal_map_position =
+                        *portal.local_position() - (*portal.portal_to_map_position());
+
+                    positions_map_ids.push((portal_map_position, portal_map_id));
+                }
+            }
+
+            for (portal_map_position, portal_map_id) in positions_map_ids.iter() {
+                map.add_sub_map(*portal_map_position, *portal_map_id);
+                if recursion_depth > 1 {
+                    on_maps.push_back((*portal_map_position, recursion_depth - 1, *portal_map_id));
+                }
             }
         }
 
-        for (portal_map_position, portal_map_id) in positions_map_ids.iter() {
-            map.add_sub_map(*portal_map_position, *portal_map_id);
+        if recursion_depth == 1 {
+            return;
+        }
+
+        while !on_maps.is_empty() {
+            let (accumulated_position, recursion_depth, target_map_id) =
+                on_maps.pop_front().unwrap();
+
+            if recursion_depth == 0 {
+                continue;
+            }
+
+            positions_map_ids.clear();
+            let target_map = &maps[target_map_id].read();
+            for portal in target_map.portals() {
+                if (self.portal_filter)(portal) {
+                    let portal_map_id = portal.target();
+
+                    if visited.contains(&portal_map_id) {
+                        continue;
+                    }
+                    visited.insert(portal_map_id);
+
+                    let portal_map_position =
+                        *portal.local_position() - (*portal.portal_to_map_position());
+
+                    positions_map_ids.push((portal_map_position, portal_map_id));
+                }
+            }
+
+            for (portal_map_position, portal_map_id) in positions_map_ids.iter() {
+                map.add_sub_map(accumulated_position + *portal_map_position, *portal_map_id);
+                on_maps.push_back((
+                    accumulated_position + *portal_map_position,
+                    recursion_depth - 1,
+                    *portal_map_id,
+                ));
+            }
         }
     }
 }
