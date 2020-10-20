@@ -39,15 +39,17 @@ use crate::geometry::*;
 ///             )],
 ///             Some(Box::new(SparseMap::new)),
 ///             Some(&[&WalledRoomGenerator::new(Size::zero())]),
-///             Some(|map_id: MapId| {
+///             Some(|position: Position, map_id: MapId| {
 ///                 let maps = &MAPS.read();
 ///                 let map = &maps[map_id].read();
+///                 let mut area = *map.area();
+///                 *area.position_mut() = *area.position() + position;
 ///                 println!("{}", map.area());
 ///                 !(
-///                     map.position().x() < 0 ||
-///                     map.position().y() < 0 ||
-///                     map.area().right() >= 40 ||
-///                     map.area().bottom() >= 30
+///                     area.left() < 0 ||
+///                     area.top() < 0 ||
+///                     area.right() >= 40 ||
+///                     area.bottom() >= 30
 ///                 )
 ///             }),
 ///         ))
@@ -75,7 +77,7 @@ use crate::geometry::*;
 /// ```
 pub struct SubMapGenerator<'a, TValidityCheck>
 where
-    TValidityCheck: Fn(MapId) -> bool,
+    TValidityCheck: Fn(Position, MapId) -> bool,
 {
     sub_maps_generator_sets: &'a [SubMapGeneratorSet<'a>],
     fallback_map_provider: Option<Box<dyn Fn() -> MapId>>,
@@ -89,7 +91,7 @@ pub struct SubMapGeneratorSet<'a> {
     provides_position: &'a dyn ProvidesPosition,
     provides_map: Option<Box<dyn Fn() -> MapId>>,
     sub_maps_generators: Option<&'a [&'a dyn DoesDunGen]>,
-    validity_check: Option<Box<dyn Fn(MapId) -> bool>>,
+    validity_check: Option<Box<dyn Fn(Position, MapId) -> bool>>,
 }
 
 impl<'a> SubMapGeneratorSet<'a> {
@@ -99,7 +101,7 @@ impl<'a> SubMapGeneratorSet<'a> {
         provides_position: &'a dyn ProvidesPosition,
         provides_map: Option<Box<dyn Fn() -> MapId>>,
         sub_maps_generators: Option<&'a [&'a dyn DoesDunGen]>,
-        validity_check: Option<Box<dyn Fn(MapId) -> bool>>,
+        validity_check: Option<Box<dyn Fn(Position, MapId) -> bool>>,
     ) -> Self {
         Self {
             provides_count,
@@ -113,7 +115,7 @@ impl<'a> SubMapGeneratorSet<'a> {
 
 impl<'a, TValidityCheck> SubMapGenerator<'a, TValidityCheck>
 where
-    TValidityCheck: Fn(MapId) -> bool,
+    TValidityCheck: Fn(Position, MapId) -> bool,
 {
     /// Creates a new generator for adding portals to a map.
     pub fn new(
@@ -133,7 +135,7 @@ where
 
 impl<'a, TValidityCheck> DoesDunGen for SubMapGenerator<'a, TValidityCheck>
 where
-    TValidityCheck: Fn(MapId) -> bool,
+    TValidityCheck: Fn(Position, MapId) -> bool,
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
         let map_id = target.get_map_id();
@@ -188,7 +190,7 @@ where
                     }
 
                     if let Some(validity_check) = validity_check {
-                        if !validity_check(new_map_id) {
+                        if !validity_check(position, new_map_id) {
                             invalidate_map(new_map_id)
                         } else {
                             break;
@@ -196,7 +198,7 @@ where
                     }
 
                     if let Some(validity_check) = &self.validity_check {
-                        if !validity_check(new_map_id) {
+                        if !validity_check(position, new_map_id) {
                             invalidate_map(new_map_id)
                         } else {
                             break;
