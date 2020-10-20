@@ -40,7 +40,6 @@ use super::*;
 ///     let maps = MAPS.read();
 ///     let map = maps[map_id].read();
 ///
-///     assert!(*map.size() == Size::new(12, 8));
 ///     assert!(map.portal_count() == num_portals);
 ///     assert!(map.portal_count() >= 2 && map.portal_count() <= 5);
 ///     let mut portal_count = 0;
