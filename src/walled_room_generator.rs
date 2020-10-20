@@ -112,8 +112,8 @@ where
     }
 
     fn dun_gen_map(&self, map_id: MapId) {
-        let maps = &MAPS.read()[map_id];
-        let map = &mut maps.write();
+        let maps = &MAPS.read();
+        let map = &mut maps[map_id].write();
 
         let area = self.provides_area.provide_area();
         let area = if area.width() > 0 || area.height() > 0 {
