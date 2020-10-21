@@ -100,6 +100,10 @@ where
             dont_replace,
         }
     }
+
+    fn dont_replace(&self, check: &Option<TileType>) -> bool {
+        self.dont_replace.contains(check)
+    }
 }
 
 impl<'a, TProvidesArea> DoesDunGen for WalledRoomGenerator<'a, TProvidesArea>
@@ -126,32 +130,14 @@ where
             return;
         }
 
-        for x in area.position().x()..=area.right() {
-            let position = Position::new(x, 0);
-            if !self
-                .dont_replace
-                .contains(&map.tile_type_at_local(position))
-            {
-                map.tile_type_at_local_set(position, TileType::Wall);
-            }
-        }
-        for y in area.position().y()..=area.bottom() {
-            let left = Position::new(0, y);
-            if !self.dont_replace.contains(&map.tile_type_at_local(left)) {
-                map.tile_type_at_local_set(left, TileType::Wall);
-            }
-            let right = Position::new(area.right(), y);
-            if !self.dont_replace.contains(&map.tile_type_at_local(right)) {
-                map.tile_type_at_local_set(right, TileType::Wall);
-            }
-        }
-        for x in area.position().x()..=area.right() {
-            let position = Position::new(x, area.bottom());
-            if !self
-                .dont_replace
-                .contains(&map.tile_type_at_local(position))
-            {
-                map.tile_type_at_local_set(position, TileType::Wall);
+        for y in area.top()..=area.bottom() {
+            for x in area.left()..=area.right() {
+                let position = Position::new(x, y);
+                if !self.dont_replace(&map.tile_type_at_local(position))
+                    && map.contains_local_position(position) == Containment::Intersects
+                {
+                    map.tile_type_at_local_set(position, TileType::Wall);
+                }
             }
         }
     }
