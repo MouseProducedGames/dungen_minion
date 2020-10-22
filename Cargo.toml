@@ -14,3 +14,4 @@ readme = "readme.md"
 [dependencies]
 dungen_minion_rooms = "0.2.2"
 rand = "0.7.3"
+rayon = "1.5.0"

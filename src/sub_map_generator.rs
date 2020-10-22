@@ -14,7 +14,8 @@ use crate::geometry::*;
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
-/// for _ in 0..500 {
+/// use rayon::prelude::*;
+/// [0..500].par_iter().for_each(|_i| {
 ///     // We could provide CountRange directly to EdgePortalsGenerator, but that would not let us
 ///     // test that we have the right number of portals.
 ///     // This CountRange will generate a number in the range [4, 9].
@@ -73,7 +74,7 @@ use crate::geometry::*;
 ///     }
 ///     assert!(sub_map_count == num_sub_maps);
 ///     assert!(sub_map_count >= 4 && sub_map_count <= 9);
-/// }
+/// })
 /// ```
 pub struct SubMapGenerator<'a, TValidityCheck>
 where

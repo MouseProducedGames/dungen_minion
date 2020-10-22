@@ -14,7 +14,8 @@ use std::sync::RwLock;
 /// ```
 /// # use dungen_minion::geometry::*;
 /// # use dungen_minion::*;
-/// for _ in 0..1_000 {
+/// use rayon::prelude::*;
+/// [0..1_000].par_iter().for_each(|_i| {
 ///     // We could provide CountRange directly to EdgePortalsGenerator, but that would not let us
 ///     // test that we have the right number of portals.
 ///     // This CountRange will generate a number in the range [2, 5].
@@ -67,7 +68,7 @@ use std::sync::RwLock;
 ///     }
 ///     assert!(portal_count == num_portals);
 ///     assert!(portal_count >= 2 && portal_count <= 5);
-/// }
+/// })
 /// ```
 pub struct MergePortalMapsAsSubMapsGenerator<TPortalFilter>
 where
