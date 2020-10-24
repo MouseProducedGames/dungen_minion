@@ -139,7 +139,6 @@ where
                 let position = Position::new(x, y);
                 if !self.dont_replace(&map.tile_type_at_local(position))
                     && shape.contains_position(position) == Containment::Intersects
-                    && map.contains_position(position) == Containment::Intersects
                 {
                     map.tile_type_at_local_set(position, TileType::Wall);
                 }
