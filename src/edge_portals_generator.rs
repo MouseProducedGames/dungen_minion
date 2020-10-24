@@ -98,34 +98,53 @@ where
                 return;
             }
 
+            let mut edge_tiles = Vec::new();
+            for x in (map.left() + 1)..map.right() {
+                let position = Position::new(x, 0);
+                if map.contains_position(position) == Containment::Intersects {
+                    edge_tiles.push(position);
+                }
+            }
+            for y in (map.top() + 1)..map.bottom() {
+                {
+                    let position = Position::new(map.left(), y);
+                    if map.contains_position(position) == Containment::Intersects {
+                        edge_tiles.push(position);
+                    }
+                }
+
+                {
+                    let position = Position::new(map.right(), y);
+                    if map.contains_position(position) == Containment::Intersects {
+                        edge_tiles.push(position);
+                    }
+                }
+            }
+            for x in (map.left() + 1)..map.right() {
+                let position = Position::new(x, map.bottom());
+                if map.contains_position(position) == Containment::Intersects {
+                    edge_tiles.push(position);
+                }
+            }
+
             let count = self.provides_count.provide_count();
             let mut rng = thread_rng();
             for _ in 0..count {
-                let total_odds = area.height() as f64 + area.width() as f64;
-                let on_vertical_wall = rng.gen_bool(area.height() as f64 / total_odds);
-                data.push(if on_vertical_wall {
-                    let portal_y = rng.gen_range(1, area.bottom()) as i32;
-                    let on_left_wall = rng.gen_bool(0.5);
-                    if on_left_wall {
-                        (Position::new(0, portal_y), CardinalDirection::East)
+                let index = rng.gen_range(0, edge_tiles.len());
+                let edge_portal_position = edge_tiles[index];
+                edge_tiles.truncate(edge_tiles.len() - 1);
+                data.push((
+                    edge_portal_position,
+                    if edge_portal_position.x() == map.left() {
+                        CardinalDirection::East
+                    } else if edge_portal_position.x() == map.right() {
+                        CardinalDirection::West
+                    } else if edge_portal_position.y() == map.top() {
+                        CardinalDirection::South
                     } else {
-                        (
-                            Position::new(area.right(), portal_y),
-                            CardinalDirection::West,
-                        )
-                    }
-                } else {
-                    let portal_x = rng.gen_range(1, area.width() - 1) as i32;
-                    let on_top_wall = rng.gen_bool(0.5);
-                    if on_top_wall {
-                        (Position::new(portal_x, 0), CardinalDirection::South)
-                    } else {
-                        (
-                            Position::new(portal_x, area.bottom()),
-                            CardinalDirection::North,
-                        )
-                    }
-                });
+                        CardinalDirection::North
+                    },
+                ));
             }
         }
 

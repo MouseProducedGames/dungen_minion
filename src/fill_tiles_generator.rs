@@ -59,30 +59,30 @@ use crate::geometry::*;
 /// }
 /// assert!(count == 0);
 /// ```
-pub struct FillTilesGenerator<TProvidesArea>
+pub struct FillTilesGenerator<TProvidesPlacedShape>
 where
-    TProvidesArea: ProvidesArea + Sized,
+    TProvidesPlacedShape: ProvidesPlacedShape + Sized,
 {
-    provides_area: TProvidesArea,
+    provides_placed_shape: TProvidesPlacedShape,
     tile_type_fill: TileType,
 }
 
-impl<TProvidesArea> FillTilesGenerator<TProvidesArea>
+impl<TProvidesPlacedShape> FillTilesGenerator<TProvidesPlacedShape>
 where
-    TProvidesArea: ProvidesArea + Sized,
+    TProvidesPlacedShape: ProvidesPlacedShape + Sized,
 {
     /// Creates a new generator for filling an area of the map with the specified `TileType`.
-    pub fn new(provides_area: TProvidesArea, tile_type_fill: TileType) -> Self {
+    pub fn new(provides_placed_shape: TProvidesPlacedShape, tile_type_fill: TileType) -> Self {
         Self {
-            provides_area,
+            provides_placed_shape,
             tile_type_fill,
         }
     }
 }
 
-impl<TProvidesArea> DoesDunGen for FillTilesGenerator<TProvidesArea>
+impl<TProvidesPlacedShape> DoesDunGen for FillTilesGenerator<TProvidesPlacedShape>
 where
-    TProvidesArea: ProvidesArea + Sized,
+    TProvidesPlacedShape: ProvidesPlacedShape + Sized,
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
         let map_id = target.get_map_id();
@@ -90,22 +90,26 @@ where
     }
 
     fn dun_gen_map(&self, map_id: MapId) {
-        let area = self.provides_area.provide_area();
+        let shape = self.provides_placed_shape.provide_placed_shape();
         let maps = &MAPS.read();
         let map = &mut maps[map_id].write();
-        let area = if area.width() > 0 || area.height() > 0 {
-            area
+        let possible_area = Area::from(*map.size());
+        let shape = if shape.width() > 0 || shape.height() > 0 {
+            shape
         } else {
-            Area::from(*map.size())
+            possible_area.provide_placed_shape()
         };
 
-        if *area.size() == Size::zero() {
+        if *shape.size() == Size::zero() {
             return;
         }
 
-        for y in area.position().y()..=area.bottom() {
-            for x in area.position().x()..=area.right() {
-                map.tile_type_at_local_set(Position::new(x, y), self.tile_type_fill);
+        for y in shape.top()..=shape.bottom() {
+            for x in shape.left()..=shape.right() {
+                let position = Position::new(x, y);
+                if shape.intersects_position(position) {
+                    map.tile_type_at_local_set(position, self.tile_type_fill);
+                }
             }
         }
     }

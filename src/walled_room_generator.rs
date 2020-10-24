@@ -73,30 +73,33 @@ use crate::geometry::*;
 /// }
 /// assert!(count == 0);
 /// ```
-pub struct WalledRoomGenerator<'a, TProvidesArea>
+pub struct WalledRoomGenerator<'a, TProvidesPlacedShape>
 where
-    TProvidesArea: ProvidesArea + Sized,
+    TProvidesPlacedShape: ProvidesPlacedShape + Sized,
 {
-    provides_area: TProvidesArea,
+    provides_placed_shape: TProvidesPlacedShape,
     dont_replace: &'a [Option<TileType>],
 }
 
-impl<'a, TProvidesArea> WalledRoomGenerator<'a, TProvidesArea>
+impl<'a, TProvidesPlacedShape> WalledRoomGenerator<'a, TProvidesPlacedShape>
 where
-    TProvidesArea: ProvidesArea + Sized,
+    TProvidesPlacedShape: ProvidesPlacedShape + Sized,
 {
     /// Creates a new generator for walling in a map. By default, will not replace `TileType::Portal`s.
-    pub fn new(provides_area: TProvidesArea) -> Self {
+    pub fn new(provides_placed_shape: TProvidesPlacedShape) -> Self {
         Self {
-            provides_area,
+            provides_placed_shape,
             dont_replace: &[Some(TileType::Portal)],
         }
     }
 
     /// Creates a new generator for walling in a map, with a specific filter of `Option<TileType>` options that won't be replaced.
-    pub fn with_filter(provides_area: TProvidesArea, dont_replace: &'a [Option<TileType>]) -> Self {
+    pub fn with_filter(
+        provides_placed_shape: TProvidesPlacedShape,
+        dont_replace: &'a [Option<TileType>],
+    ) -> Self {
         Self {
-            provides_area,
+            provides_placed_shape,
             dont_replace,
         }
     }
@@ -106,9 +109,9 @@ where
     }
 }
 
-impl<'a, TProvidesArea> DoesDunGen for WalledRoomGenerator<'a, TProvidesArea>
+impl<'a, TProvidesPlacedShape> DoesDunGen for WalledRoomGenerator<'a, TProvidesPlacedShape>
 where
-    TProvidesArea: ProvidesArea + Sized,
+    TProvidesPlacedShape: ProvidesPlacedShape + Sized,
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
         let map_id = target.get_map_id();
@@ -119,22 +122,24 @@ where
         let maps = &MAPS.read();
         let map = &mut maps[map_id].write();
 
-        let area = self.provides_area.provide_area();
-        let area = if area.width() > 0 || area.height() > 0 {
-            area
+        let shape = self.provides_placed_shape.provide_placed_shape();
+        let possible_area = Area::from(*map.size());
+        let shape = if shape.width() > 0 || shape.height() > 0 {
+            shape
         } else {
-            Area::from(*map.size())
+            possible_area.provide_placed_shape()
         };
 
-        if *area.size() == Size::zero() {
+        if *shape.size() == Size::zero() {
             return;
         }
 
-        for y in area.top()..=area.bottom() {
-            for x in area.left()..=area.right() {
+        for y in shape.top()..=shape.bottom() {
+            for x in shape.left()..=shape.right() {
                 let position = Position::new(x, y);
                 if !self.dont_replace(&map.tile_type_at_local(position))
-                    && map.contains_local_position(position) == Containment::Intersects
+                    && shape.contains_position(position) == Containment::Intersects
+                    && map.contains_position(position) == Containment::Intersects
                 {
                     map.tile_type_at_local_set(position, TileType::Wall);
                 }

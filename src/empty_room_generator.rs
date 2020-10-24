@@ -44,28 +44,28 @@ use crate::geometry::*;
 /// }
 /// assert!(count == 0);
 /// ```
-pub struct EmptyRoomGenerator<TProvidesArea>
+pub struct EmptyRoomGenerator<TProvidesPlacedShape>
 where
-    TProvidesArea: ProvidesArea + Sized,
+    TProvidesPlacedShape: ProvidesPlacedShape + Sized,
 {
-    forward_to: FillTilesGenerator<TProvidesArea>,
+    forward_to: FillTilesGenerator<TProvidesPlacedShape>,
 }
 
-impl<TProvidesArea> EmptyRoomGenerator<TProvidesArea>
+impl<TProvidesPlacedShape> EmptyRoomGenerator<TProvidesPlacedShape>
 where
-    TProvidesArea: ProvidesArea + Sized,
+    TProvidesPlacedShape: ProvidesPlacedShape + Sized,
 {
     /// Creates a new generator for adding flooring to a map.
-    pub fn new(provides_area: TProvidesArea) -> Self {
+    pub fn new(provides_placed_shape: TProvidesPlacedShape) -> Self {
         Self {
-            forward_to: FillTilesGenerator::new(provides_area, TileType::Floor),
+            forward_to: FillTilesGenerator::new(provides_placed_shape, TileType::Floor),
         }
     }
 }
 
-impl<TProvidesArea> DoesDunGen for EmptyRoomGenerator<TProvidesArea>
+impl<TProvidesPlacedShape> DoesDunGen for EmptyRoomGenerator<TProvidesPlacedShape>
 where
-    TProvidesArea: ProvidesArea + Sized,
+    TProvidesPlacedShape: ProvidesPlacedShape + Sized,
 {
     fn dun_gen(&self, target: &mut dyn SupportsDunGen) {
         self.forward_to.dun_gen(target)
