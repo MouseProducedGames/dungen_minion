@@ -1,6 +1,6 @@
 [package]
 name = "dungen_minion"
-version = "0.2.3"
+version = "0.3.0"
 authors = ["MouseProducedGames <largemouse@gmail.com>"]
 edition = "2018"
 license-file = "LICENSE"
